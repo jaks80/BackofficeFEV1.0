@@ -1,5 +1,6 @@
 package com.ets.fe;
 
+import com.ets.fe.security.Cryptography;
 import com.ets.fe.util.DirectoryHandler;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +14,7 @@ import java.util.Properties;
  *
  * @author Yusuf
  */
-public class APIConfig {
+public final class APIConfig {
 
     private static Properties apiprop;
     private static Properties confprop;
@@ -24,14 +25,9 @@ public class APIConfig {
         try {
             sdkis = APIConfig.class.getResourceAsStream("/api.properties");
             apiprop = new Properties();
-            apiprop.load(sdkis);            
-            
-            File conf_file = new File(DirectoryHandler.getAPP_CONF_DIR().getAbsolutePath() + "/conf.properties");            
-            if (conf_file.exists()) {
-                is = new FileInputStream(conf_file);
-                confprop = new Properties();
-                confprop.load(is);
-            }
+            apiprop.load(sdkis);
+
+            loadConfigFile();
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -50,34 +46,44 @@ public class APIConfig {
         }
     }
 
-    public static void writeConfProps(String encryptedagent_id) {
+    public static void loadConfigFile() throws FileNotFoundException, IOException {
+        FileInputStream is = null;
+        File conf_file = new File(DirectoryHandler.getAPP_CONF_DIR().getAbsolutePath() + "/conf.properties");
+        if (conf_file.exists()) {
+            is = new FileInputStream(conf_file);
+            confprop = new Properties();
+            confprop.load(is);
+        }
+    }
+
+    public static void writeConfProps(String agent_id) {
+
+        String encryptedagent_id = Cryptography.encryptString(agent_id);
         FileOutputStream fileOut = null;
         try {
             Properties properties = new Properties();
             properties.setProperty("ws.id", encryptedagent_id);
-                        
+
             File file = new File(DirectoryHandler.getAPP_CONF_DIR().getAbsolutePath() + "/conf.properties");
             fileOut = new FileOutputStream(file);
             properties.store(fileOut, "Conf");
-
+            
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException ex) {            
         } finally {
             try {
-                fileOut.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                fileOut.close();   
+                loadConfigFile();
+            } catch (IOException ex) {                
             }
         }
     }
 
-    public static String get(String key) {        
+    public static String get(String key) {
         return apiprop.getProperty(key);
     }
 
-    public static String getConfProp(String key) {        
+    public static String getConfProp(String key) {
         return confprop.getProperty(key);
     }
 }

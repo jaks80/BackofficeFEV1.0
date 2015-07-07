@@ -19,18 +19,20 @@ public class PnrSearchTask extends SwingWorker< List<Pnr>, Integer> {
     private String invRef = null;
     private String name = null;
     private String taskType = null;
+    private String ticketNo = null;
 
     public PnrSearchTask(String searchType, JXBusyLabel busyLabel) {
         this.taskType = searchType;
         this.busyLabel = busyLabel;
     }
 
-    public PnrSearchTask(String searchType, JXBusyLabel busyLabel, String gdsPnr, String invRef, String name) {
+    public PnrSearchTask(String searchType, JXBusyLabel busyLabel, String gdsPnr, String invRef, String name, String ticketNo) {
         this.taskType = searchType;
         this.busyLabel = busyLabel;
         this.gdsPnr = gdsPnr;
         this.invRef = invRef;
         this.name = name;
+        this.ticketNo = ticketNo;
     }
 
     @Override
@@ -57,7 +59,10 @@ public class PnrSearchTask extends SwingWorker< List<Pnr>, Integer> {
                     pnrs = client.searchPnrByName(names[0], names[1]);
                 } else if (invRef != null && !invRef.isEmpty()) {
                     pnrs = client.getPnrByInvRef(invRef);
+                }else if (ticketNo != null && !ticketNo.isEmpty()) {
+                    pnrs = client.searchPnrByTicketNo(ticketNo);
                 }
+                
                 break;
             default:
         }

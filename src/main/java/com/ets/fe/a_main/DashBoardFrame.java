@@ -257,6 +257,8 @@ public class DashBoardFrame extends JInternalFrame {
         jLabel4 = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        txtTicketNo = new javax.swing.JTextField();
         pnlInvoice2 = new javax.swing.JPanel();
         tabUnpaidFlight = new javax.swing.JTabbedPane();
         jScrollPane13 = new javax.swing.JScrollPane();
@@ -692,11 +694,38 @@ public class DashBoardFrame extends JInternalFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         jPanel2.add(btnSearch, gridBagConstraints);
+
+        jLabel1.setText("Tkt No");
+        jLabel1.setToolTipText("");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel2.add(jLabel1, gridBagConstraints);
+
+        txtTicketNo.setToolTipText("Search by Ticket number. (Without airline code)");
+        txtTicketNo.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtTicketNoFocusGained(evt);
+            }
+        });
+        txtTicketNo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtTicketNoKeyReleased(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        jPanel2.add(txtTicketNo, gridBagConstraints);
 
         javax.swing.GroupLayout pnlPnrSearchLayout = new javax.swing.GroupLayout(pnlPnrSearch);
         pnlPnrSearch.setLayout(pnlPnrSearchLayout);
@@ -712,7 +741,7 @@ public class DashBoardFrame extends JInternalFrame {
             .addGroup(pnlPnrSearchLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(149, Short.MAX_VALUE))
+                .addContainerGap(96, Short.MAX_VALUE))
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -953,7 +982,7 @@ public class DashBoardFrame extends JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(1, 1, 1)
-                .addComponent(mainTabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+                .addComponent(mainTabPane, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1115,6 +1144,20 @@ public class DashBoardFrame extends JInternalFrame {
         }
     }//GEN-LAST:event_tblOInvTodayMouseClicked
 
+    private void txtTicketNoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtTicketNoFocusGained
+        txtPnr.setText("");
+        txtInvRef.setText("");
+        txtName.setText("");
+        txtTicketNo.selectAll();
+    }//GEN-LAST:event_txtTicketNoFocusGained
+
+    private void txtTicketNoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTicketNoKeyReleased
+        int key = evt.getKeyCode();
+        if (key == KeyEvent.VK_ENTER) {
+            pnrSearch.querySearch();
+        }
+    }//GEN-LAST:event_txtTicketNoKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDeletePnr;
@@ -1127,6 +1170,7 @@ public class DashBoardFrame extends JInternalFrame {
     private javax.swing.JButton btnSearch;
     private org.jdesktop.swingx.JXBusyLabel invoiceBusyLabel;
     private org.jdesktop.swingx.JXBusyLabel invoiceBusyLabel2;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1162,6 +1206,7 @@ public class DashBoardFrame extends JInternalFrame {
     private javax.swing.JTextField txtInvRef;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPnr;
+    private javax.swing.JTextField txtTicketNo;
     // End of variables declaration//GEN-END:variables
 
     private void remove_title_bar() {
@@ -1334,8 +1379,10 @@ public class DashBoardFrame extends JInternalFrame {
             String name = txtName.getText();
             String pnr = txtPnr.getText();
             String invRef = txtInvRef.getText();
+            String ticketNo = txtTicketNo.getText();
+            
             taskType = "QUERY_SEARCH";
-            pnrSearchTask = new PnrSearchTask(taskType, pnrBusyLabel, pnr, invRef, name);
+            pnrSearchTask = new PnrSearchTask(taskType, pnrBusyLabel, pnr, invRef, name, ticketNo);
             pnrSearchTask.addPropertyChangeListener(this);
             pnrSearchTask.execute();
         }

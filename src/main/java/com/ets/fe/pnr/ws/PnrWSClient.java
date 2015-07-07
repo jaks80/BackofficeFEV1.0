@@ -83,6 +83,14 @@ public class PnrWSClient {
         return pnrs.getList();
     }
 
+    public List<Pnr> searchPnrByTicketNo(String ticketNo) {
+        String url = APIConfig.get("ws.pnr.byticketno") + "?byticketno=" + ticketNo;
+
+        Pnrs pnrs = new Pnrs();
+        pnrs = RestClientUtil.getEntity(Pnrs.class, url, pnrs);
+        return pnrs.getList();
+    }
+    
     public List<Pnr> getPnrByInvRef(String invref) {
         String url = APIConfig.get("ws.pnr.byginvref") + "?invref=" + invref;
 
