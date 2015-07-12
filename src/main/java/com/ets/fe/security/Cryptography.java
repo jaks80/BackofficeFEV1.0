@@ -109,7 +109,7 @@ public class Cryptography {
     }
 
     public static void main(String[] args) throws Exception {
-        String message = "ETSBackoffice3.0";
+        String message = "1234";
         System.out.println("Message: " + String.valueOf(message));
 
         String encs = encryptString(message);
@@ -117,7 +117,7 @@ public class Cryptography {
         System.out.println("Decrypted: " + decryptString(encs));
         
         
-        message = "mozir";
+        message = "shakira2";
         System.out.println("Message: " + String.valueOf(message));
 
         encs = encryptString(message);

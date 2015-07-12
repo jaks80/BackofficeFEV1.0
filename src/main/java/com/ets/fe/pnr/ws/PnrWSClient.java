@@ -10,7 +10,6 @@ import com.ets.fe.pnr.model.Ticket;
 import com.ets.fe.util.DateUtil;
 import java.util.Date;
 import java.util.List;
-import javax.swing.JOptionPane;
 import org.apache.http.HttpResponse;
 
 /**
@@ -84,7 +83,7 @@ public class PnrWSClient {
     }
 
     public List<Pnr> searchPnrByTicketNo(String ticketNo) {
-        String url = APIConfig.get("ws.pnr.byticketno") + "?byticketno=" + ticketNo;
+        String url = APIConfig.get("ws.pnr.byticketno") + "?ticketNo=" + ticketNo;
 
         Pnrs pnrs = new Pnrs();
         pnrs = RestClientUtil.getEntity(Pnrs.class, url, pnrs);

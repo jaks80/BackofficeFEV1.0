@@ -34,7 +34,7 @@ import org.apache.http.util.EntityUtils;
  */
 public class RestClientUtil {
 
-    private static String domain = APIConfig.get("ws.domain")+"/"+Cryptography.decryptString(APIConfig.getConfProp("ws.id"))+"/"+APIConfig.get("ws.webservicepath");
+    private static String domain = APIConfig.get("ws.domain") + "/" + Cryptography.decryptString(APIConfig.getConfProp("ws.id")) + "/" + APIConfig.get("ws.webservicepath");
     private static String AUTHORIZATION_PROPERTY = "Authorization";
 
     public static void showMessage(HttpResponse response, String title) {
@@ -59,14 +59,29 @@ public class RestClientUtil {
 
     public static void displayErrorMessage(String message) {
 
-        JTextArea jta = new JTextArea(message);
+        JTextArea jta = new JTextArea(extractHTMLErrorMessage(message));
         JScrollPane jsp = new JScrollPane(jta) {
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(480, 320);
             }
         };
+
         JOptionPane.showMessageDialog(null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private static String extractHTMLErrorMessage(String html) {
+        
+        if(!html.contains("##")){
+         return html;
+        }
+        
+        String message = "";
+        String[] vals = html.split("##");
+        if (vals.length >= 1) {
+            message = vals[1];
+        }
+        return message;
     }
 
     public synchronized static <T> T getEntity(final Class<T> type, String destUrl, T entity) {
@@ -160,7 +175,7 @@ public class RestClientUtil {
     }
 
     public synchronized static <T> T postEntity(Class<T> type, String destUrl, T entity) {
-        System.out.println("in static method");
+
         T persistentEntity = null;
         HttpClient httpClient = HttpClientBuilder.create().build();
         try {
@@ -171,6 +186,12 @@ public class RestClientUtil {
             httppost.addHeader(AUTHORIZATION_PROPERTY, Application.getUserPassowrdEncoded());
 
             HttpResponse response = httpClient.execute(httppost);
+            int http_status = response.getStatusLine().getStatusCode();
+
+            if (http_status != 200) {
+                showMessage(response, "Message!");
+            }
+
             HttpEntity httpEntity = response.getEntity();
 
             if (httpEntity != null) {

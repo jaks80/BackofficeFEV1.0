@@ -312,6 +312,7 @@ public class DashBoardFrame extends JInternalFrame {
             }
         });
         tblSTktInvToday.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        tblSTktInvToday.setSortable(false);
         tblSTktInvToday.getTableHeader().setReorderingAllowed(false);
         tblSTktInvToday.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

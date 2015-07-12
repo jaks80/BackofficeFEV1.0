@@ -107,7 +107,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
                 String clientName = "";
                 if (s.getAgent() != null) {
                     clientName = s.getAgent().getName();
-                } else {
+                } else if (s.getCustomer()!= null) {
                     clientName = s.getCustomer().calculateFullName();
                 }
 
