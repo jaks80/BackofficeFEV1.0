@@ -1,5 +1,6 @@
 package com.ets.fe.accounts.gui.revenue;
 
+import static com.ets.fe.acdoc.gui.report.TSalesInvoiceReportingFrame.client_type;
 import com.ets.fe.pnr.model.TicketSaleReport;
 import com.ets.fe.pnr.model.TicketSaleReport.SaleReportLine;
 import com.ets.fe.pnr.task.TicketSaleReportTask;
@@ -46,6 +47,9 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     private Date from = null;
     private Date to = null;
 
+    public static Enums.ClientType client_type;
+    private Long client_id;
+    
     public TicketSaleReportFrame(JDesktopPane desktopPane) {
         initComponents();
         this.desktopPane = desktopPane;
@@ -72,7 +76,10 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
 
         from = dtFrom.getDate();
         to = dtTo.getDate();
-
+        
+        client_type = documentSearchComponent.getContactableType();
+        client_id = documentSearchComponent.getClient_id();
+        
         if ("All".equals(ticketStatus)) {
             ticketStatus = null;
         }
@@ -95,7 +102,8 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
         }
         progressBar.setValue(0);
 
-        task = new TicketSaleReportTask(userid,ticketingType, ticketStatus, airLineCode, from, to, ticketingAgtOid);
+        task = new TicketSaleReportTask(userid,ticketingType, ticketStatus, 
+                airLineCode, from, to,client_type,client_id, ticketingAgtOid);
         task.addPropertyChangeListener(this);
         task.execute();
     }
@@ -202,6 +210,9 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     jLabel2 = new javax.swing.JLabel();
     cmbCashier = new javax.swing.JComboBox();
     jLabel8 = new javax.swing.JLabel();
+    documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(true,true,true,Enums.AgentType.ALL);
+    jSeparator1 = new javax.swing.JSeparator();
+    jSeparator2 = new javax.swing.JSeparator();
     jPanel4 = new javax.swing.JPanel();
     btnViewReport = new javax.swing.JButton();
     btnViewInvoice = new javax.swing.JButton();
@@ -217,8 +228,9 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     setMinimumSize(new java.awt.Dimension(1000, 500));
     setPreferredSize(new java.awt.Dimension(1000, 500));
 
-    jSplitPane1.setDividerLocation(180);
-    jSplitPane1.setDividerSize(4);
+    jSplitPane1.setDividerLocation(210);
+    jSplitPane1.setDividerSize(10);
+    jSplitPane1.setOneTouchExpandable(true);
 
     tblTicket.setBackground(new java.awt.Color(0, 0, 0));
     tblTicket.setModel(new javax.swing.table.DefaultTableModel(
@@ -321,7 +333,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     jPanel5.setLayout(jPanel5Layout);
     jPanel5Layout.setHorizontalGroup(
         jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 799, Short.MAX_VALUE)
+        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 763, Short.MAX_VALUE)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
             .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -331,7 +343,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
     );
 
     jSplitPane1.setRightComponent(jPanel5);
@@ -354,7 +366,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 0.3;
-    gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
     jPanel1.add(cmbIssueType, gridBagConstraints);
 
     jLabel1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -374,7 +386,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 0.3;
-    gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
     jPanel1.add(cmbTicketStatus, gridBagConstraints);
 
     jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -395,7 +407,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 0.3;
-    gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
     jPanel1.add(dtFrom, gridBagConstraints);
 
     jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -415,7 +427,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 0.3;
-    gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
     jPanel1.add(dtTo, gridBagConstraints);
 
     txtOfficeId.setToolTipText("Ticketing agent office Id, Separated by comma, Example: ABC123AB,CDE123CD");
@@ -423,18 +435,18 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     txtOfficeId.setPreferredSize(new java.awt.Dimension(110, 22));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 11;
+    gridBagConstraints.gridy = 13;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 0.3;
-    gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
     jPanel1.add(txtOfficeId, gridBagConstraints);
 
     jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
     jLabel6.setText("Career Code");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
@@ -444,7 +456,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     jLabel7.setText("Ticketed OfficeID");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 10;
+    gridBagConstraints.gridy = 12;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     jPanel1.add(jLabel7, gridBagConstraints);
@@ -454,11 +466,11 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     txtCareerCode.setPreferredSize(new java.awt.Dimension(110, 22));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 11;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 0.3;
-    gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
     jPanel1.add(txtCareerCode, gridBagConstraints);
 
     progressBar.setMaximumSize(new java.awt.Dimension(146, 16));
@@ -467,7 +479,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     progressBar.setStringPainted(true);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 15;
+    gridBagConstraints.gridy = 18;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
     jPanel1.add(progressBar, gridBagConstraints);
 
@@ -475,7 +487,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     jLabel2.setText("Message:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 14;
+    gridBagConstraints.gridy = 17;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
     jPanel1.add(jLabel2, gridBagConstraints);
@@ -488,22 +500,41 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 13;
+    gridBagConstraints.gridy = 16;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 4, 4, 4);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
     jPanel1.add(cmbCashier, gridBagConstraints);
 
     jLabel8.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
     jLabel8.setText("Cashier");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 12;
+    gridBagConstraints.gridy = 15;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     jPanel1.add(jLabel8, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 8;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 2);
+    jPanel1.add(documentSearchComponent, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 9;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel1.add(jSeparator1, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 14;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel1.add(jSeparator2, gridBagConstraints);
 
     jSplitPane1.setLeftComponent(jPanel1);
 
@@ -597,7 +628,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
         .addGroup(layout.createSequentialGroup()
             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(0, 0, 0)
-            .addComponent(jSplitPane1))
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE))
     );
 
     pack();
@@ -637,6 +668,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     private javax.swing.JComboBox cmbCashier;
     private javax.swing.JComboBox cmbIssueType;
     private javax.swing.JComboBox cmbTicketStatus;
+    private com.ets.fe.acdoc.gui.comp.ClientSearchComp documentSearchComponent;
     private org.jdesktop.swingx.JXDatePicker dtFrom;
     private org.jdesktop.swingx.JXDatePicker dtTo;
     private javax.swing.JLabel jLabel1;
@@ -656,6 +688,8 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lblTktQty;
     private javax.swing.JLabel lblTotalPurchase;

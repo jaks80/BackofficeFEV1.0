@@ -46,6 +46,23 @@ public class AcDocUtil {
         }
         return okToInvoice;
     }
+    
+     public static boolean okToInvoice(List<AccountingDocumentLine> lines) {
+        boolean okToInvoice = true;
+        
+        for (AccountingDocumentLine t : lines) {
+            if (t.calculateOServiceLineTotal().compareTo(new BigDecimal("0.00")) == 0) {
+                okToInvoice = false;
+            }
+        }
+
+        if (!okToInvoice) {
+            JOptionPane.showMessageDialog(null, "Item contains 0.00 value!\n"
+                    +"Could not proceed to invoicing...", "Issue Invoice", JOptionPane.WARNING_MESSAGE);
+        } 
+        return okToInvoice;
+    }
+
 
     public static boolean validatePurchaseFare(List<Ticket> ticketsToInvoice) {
         boolean okToInvoice = false;

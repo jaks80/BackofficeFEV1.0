@@ -6,7 +6,9 @@ import com.ets.fe.APIConfig;
 import com.ets.fe.pnr.model.Ticket;
 import com.ets.fe.pnr.model.TicketSaleReport;
 import com.ets.fe.util.DateUtil;
-import com.ets.fe.util.Enums.*;
+import com.ets.fe.util.Enums;
+import com.ets.fe.util.Enums.TicketStatus;
+import com.ets.fe.util.Enums.TicketingType;
 import java.util.Date;
 
 /**
@@ -67,7 +69,8 @@ public class TicketWSClient {
     }
 
     public TicketSaleReport saleReport(Long userid,TicketingType ticketingType, TicketStatus ticketStatus, String airLineCode,
-            Date issueDateFrom, Date issueDateTo, String ticketingAgtOid) {
+            Date issueDateFrom, Date issueDateTo, Enums.ClientType clienttype,
+            Long clientid,String ticketingAgtOid) {
 
         String dateFrom = DateUtil.dateToString(issueDateFrom, "ddMMMyyyy");
         String dateTo = DateUtil.dateToString(issueDateTo, "ddMMMyyyy");
@@ -77,6 +80,13 @@ public class TicketWSClient {
                 .append("?dateStart=").append(dateFrom)
                 .append("&dateEnd=").append(dateTo);
 
+        if (clienttype != null) {
+            sb.append("&clienttype=").append(clienttype);
+        }
+        if (clientid != null) {
+            sb.append("&clientid=").append(clientid);
+        }
+        
         if (ticketingType != null) {
             sb.append("&ticketingType=").append(ticketingType);
         }

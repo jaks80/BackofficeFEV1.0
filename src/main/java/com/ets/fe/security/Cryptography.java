@@ -122,7 +122,7 @@ public class Cryptography {
 
         encs = encryptString(message);
         System.out.println("Encrypted: " + encs);
-        System.out.println("Decrypted: " + decryptString(encs));
+        System.out.println("Decrypted: " + decryptString("+H/XIotpwW2HIOJFCMT0eM4sSxyOZj1DozF2QuPGLyE\\=partition[-119, 101, 0, -33, 59, 37, 6, 31, 14, -41, 17, -59, 125, 52, -101, 103]"));
         
         
     }

@@ -9,6 +9,7 @@ import com.ets.fe.acdoc.gui.comp.AcDocHeaderComponent;
 import com.ets.fe.accounts.task.PaymentTask;
 import com.ets.fe.accounts.gui.logic.PaymentLogicOther;
 import com.ets.fe.accounts.gui.payment.DlgOtherSalesCreditTransfer;
+import com.ets.fe.acdoc.bo.AcDocUtil;
 import com.ets.fe.acdoc_o.task.AccountingDocTaskOther;
 import com.ets.fe.client.model.Contactable;
 import com.ets.fe.os.model.*;
@@ -123,6 +124,11 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
     }
 
     public void createInvoice() {
+        
+        if(invoice.getAccountingDocumentLines().isEmpty() || !AcDocUtil.okToInvoice(invoice.getAccountingDocumentLines())){
+         return;
+        }
+        
         createOtherChargeLine();
         invoice.setAdditionalChargeLines(createOtherChargeLine());
         //invoice.setAccountingDocumentLines(otherServiceComp.getLines()); Lines are added automatically
