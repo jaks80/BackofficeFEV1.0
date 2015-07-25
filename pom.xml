@@ -100,7 +100,7 @@
                 </archive>
             </configuration>
         </plugin>
-        
+        <!--
             <plugin>
                 <groupId>org.codehaus.mojo.webstart</groupId>
                 <artifactId>webstart-maven-plugin</artifactId>
@@ -138,8 +138,8 @@
                     <verbose>true</verbose>
                 </configuration>
             </plugin>
-        
-        <!--                 
+        -->
+                         
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -162,7 +162,7 @@
         </transformers>
     </configuration>
 </plugin>
-        -->
+        
         
         </plugins>
     </build>

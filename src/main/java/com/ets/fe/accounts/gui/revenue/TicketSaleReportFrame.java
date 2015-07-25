@@ -1,10 +1,9 @@
 package com.ets.fe.accounts.gui.revenue;
 
-import com.ets.fe.acdoc.gui.SalesInvoiceDlg;
+import static com.ets.fe.acdoc.gui.report.TSalesInvoiceReportingFrame.client_type;
 import com.ets.fe.pnr.model.TicketSaleReport;
 import com.ets.fe.pnr.model.TicketSaleReport.SaleReportLine;
 import com.ets.fe.pnr.task.TicketSaleReportTask;
-import com.ets.fe.report.BeanJasperReport;
 import com.ets.fe.settings.model.User;
 import com.ets.fe.settings.model.Users;
 import com.ets.fe.settings.task.UserTask;
@@ -12,8 +11,6 @@ import com.ets.fe.util.DateUtil;
 import com.ets.fe.util.Enums;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Frame;
-import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -25,12 +22,8 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import net.sf.jasperreports.swing.JRViewer;
 import org.jdesktop.swingx.JXTable;
 
 /**
@@ -56,7 +49,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
 
     public static Enums.ClientType client_type;
     private Long client_id;
-
+    
     public TicketSaleReportFrame(JDesktopPane desktopPane) {
         initComponents();
         this.desktopPane = desktopPane;
@@ -83,10 +76,10 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
 
         from = dtFrom.getDate();
         to = dtTo.getDate();
-
+        
         client_type = documentSearchComponent.getContactableType();
         client_id = documentSearchComponent.getClient_id();
-
+        
         if ("All".equals(ticketStatus)) {
             ticketStatus = null;
         }
@@ -109,8 +102,8 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
         }
         progressBar.setValue(0);
 
-        task = new TicketSaleReportTask(userid, ticketingType, ticketStatus,
-                airLineCode, from, to, client_type, client_id, ticketingAgtOid);
+        task = new TicketSaleReportTask(userid,ticketingType, ticketStatus, 
+                airLineCode, from, to,client_type,client_id, ticketingAgtOid);
         task.addPropertyChangeListener(this);
         task.execute();
     }
@@ -122,14 +115,14 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
         userTask.execute();
     }
 
-    private void populateSummery() {
-        lblTktQty.setText(String.valueOf(report.getTktQty()));
-        lblTotalPurchase.setText(report.getTotalNetPurchaseFare());
-        lblTotalSelling.setText(report.getTotalNetSellingFare());
-        lblTotalRevenue.setText(report.getTotalRevenue());
-
+    private void populateSummery(){
+     lblTktQty.setText(String.valueOf(report.getTktQty()));
+     lblTotalPurchase.setText(report.getTotalNetPurchaseFare());
+     lblTotalSelling.setText(report.getTotalNetSellingFare());
+     lblTotalRevenue.setText(report.getTotalRevenue());
+     
     }
-
+    
     private void populateTblTicket() {
         List<SaleReportLine> lines = report.getSaleReportLines();
         DefaultTableModel tableModel = (DefaultTableModel) tblTicket.getModel();
@@ -139,7 +132,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
 
         if (lines.size() > 0) {
             for (SaleReportLine t : lines) {
-                tableModel.insertRow(row, new Object[]{row + 1, t.getDocIssuedate(), t.getTktStatus(),
+                tableModel.insertRow(row, new Object[]{row+1,t.getDocIssuedate(), t.getTktStatus(),
                     t.getGdsPnr(), t.getClient(), t.getTicketingAgent(),
                     t.getAirLineCode(), t.getTicketNo(), t.getSellingRefference(),
                     t.getNetPurchaseFare(), t.getNetSellingFare(), t.getRevenue(), t.getAtolChg()});
@@ -150,7 +143,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
         } else {
             tableModel.insertRow(0, new Object[]{});
         }
-
+        
         populateSummery();
     }
 
@@ -166,9 +159,6 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
 
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel5 = new javax.swing.JPanel();
-        tabResult = new javax.swing.JTabbedPane();
-        tabResult.addChangeListener(tabListener);
-        jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblTicket = new JXTable(){public Component prepareRenderer(TableCellRenderer renderer,
             int rowIndex, int vColIndex) {
@@ -203,13 +193,6 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     lblTotalPurchase = new javax.swing.JLabel();
     lblTotalSelling = new javax.swing.JLabel();
     lblTotalRevenue = new javax.swing.JLabel();
-    jPanel4 = new javax.swing.JPanel();
-    btnViewReport = new javax.swing.JButton();
-    btnViewInvoice = new javax.swing.JButton();
-    btnEmail = new javax.swing.JButton();
-    btnPrint = new javax.swing.JButton();
-    btnSearch = new javax.swing.JButton();
-    reportPane = new javax.swing.JScrollPane();
     jPanel1 = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
     cmbIssueType = new javax.swing.JComboBox();
@@ -230,6 +213,12 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(true,true,true,Enums.AgentType.ALL);
     jSeparator1 = new javax.swing.JSeparator();
     jSeparator2 = new javax.swing.JSeparator();
+    jPanel4 = new javax.swing.JPanel();
+    btnViewReport = new javax.swing.JButton();
+    btnViewInvoice = new javax.swing.JButton();
+    btnEmail = new javax.swing.JButton();
+    btnPrint = new javax.swing.JButton();
+    btnSearch = new javax.swing.JButton();
 
     setClosable(true);
     setIconifiable(true);
@@ -242,8 +231,6 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     jSplitPane1.setDividerLocation(210);
     jSplitPane1.setDividerSize(10);
     jSplitPane1.setOneTouchExpandable(true);
-
-    tabResult.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
 
     tblTicket.setBackground(new java.awt.Color(0, 0, 0));
     tblTicket.setModel(new javax.swing.table.DefaultTableModel(
@@ -323,7 +310,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     jPanel2Layout.setVerticalGroup(
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel2Layout.createSequentialGroup()
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addContainerGap()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel9)
                 .addComponent(lblTktQty))
@@ -338,119 +325,25 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel12)
-                .addComponent(lblTotalRevenue)))
+                .addComponent(lblTotalRevenue))
+            .addContainerGap(28, Short.MAX_VALUE))
     );
-
-    jPanel4.setBackground(new java.awt.Color(102, 102, 102));
-    jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-
-    btnViewReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/details18.png"))); // NOI18N
-    btnViewReport.setMaximumSize(new java.awt.Dimension(35, 22));
-    btnViewReport.setMinimumSize(new java.awt.Dimension(35, 22));
-    btnViewReport.setPreferredSize(new java.awt.Dimension(35, 22));
-    btnViewReport.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            btnViewReportActionPerformed(evt);
-        }
-    });
-
-    btnViewInvoice.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/acdoc18.png"))); // NOI18N
-    btnViewInvoice.setMaximumSize(new java.awt.Dimension(35, 22));
-    btnViewInvoice.setMinimumSize(new java.awt.Dimension(35, 22));
-    btnViewInvoice.setPreferredSize(new java.awt.Dimension(35, 22));
-    btnViewInvoice.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            btnViewInvoiceActionPerformed(evt);
-        }
-    });
-
-    btnEmail.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/email18.png"))); // NOI18N
-    btnEmail.setMaximumSize(new java.awt.Dimension(35, 22));
-    btnEmail.setMinimumSize(new java.awt.Dimension(35, 22));
-    btnEmail.setPreferredSize(new java.awt.Dimension(35, 22));
-    btnEmail.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            btnEmailActionPerformed(evt);
-        }
-    });
-
-    btnPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/print18.png"))); // NOI18N
-    btnPrint.setMaximumSize(new java.awt.Dimension(35, 22));
-    btnPrint.setMinimumSize(new java.awt.Dimension(35, 22));
-    btnPrint.setPreferredSize(new java.awt.Dimension(35, 22));
-    btnPrint.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            btnPrintActionPerformed(evt);
-        }
-    });
-
-    btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/search18.png"))); // NOI18N
-    btnSearch.setMaximumSize(new java.awt.Dimension(35, 22));
-    btnSearch.setMinimumSize(new java.awt.Dimension(35, 22));
-    btnSearch.setPreferredSize(new java.awt.Dimension(35, 22));
-    btnSearch.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            btnSearchActionPerformed(evt);
-        }
-    });
-
-    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-    jPanel4.setLayout(jPanel4Layout);
-    jPanel4Layout.setHorizontalGroup(
-        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-            .addComponent(btnViewInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(2, 2, 2)
-            .addComponent(btnViewReport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(2, 2, 2)
-            .addComponent(btnEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(2, 2, 2)
-            .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(2, 2, 2)
-            .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-    jPanel4Layout.setVerticalGroup(
-        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(btnViewInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addComponent(btnEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addComponent(btnViewReport, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addComponent(btnSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-    );
-
-    javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-    jPanel3.setLayout(jPanel3Layout);
-    jPanel3Layout.setHorizontalGroup(
-        jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel3Layout.createSequentialGroup()
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1023, Short.MAX_VALUE)
-    );
-    jPanel3Layout.setVerticalGroup(
-        jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE))
-    );
-
-    tabResult.addTab("Search", jPanel3);
-    tabResult.addTab("Print View", reportPane);
 
     javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
     jPanel5.setLayout(jPanel5Layout);
     jPanel5Layout.setHorizontalGroup(
         jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(tabResult)
+        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 763, Short.MAX_VALUE)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
     jPanel5Layout.setVerticalGroup(
         jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(tabResult, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
     );
 
     jSplitPane1.setRightComponent(jPanel5);
@@ -645,15 +538,97 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
 
     jSplitPane1.setLeftComponent(jPanel1);
 
+    jPanel4.setBackground(new java.awt.Color(102, 102, 102));
+    jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+    btnViewReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/details18.png"))); // NOI18N
+    btnViewReport.setMaximumSize(new java.awt.Dimension(35, 22));
+    btnViewReport.setMinimumSize(new java.awt.Dimension(35, 22));
+    btnViewReport.setPreferredSize(new java.awt.Dimension(35, 22));
+    btnViewReport.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnViewReportActionPerformed(evt);
+        }
+    });
+
+    btnViewInvoice.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/acdoc18.png"))); // NOI18N
+    btnViewInvoice.setMaximumSize(new java.awt.Dimension(35, 22));
+    btnViewInvoice.setMinimumSize(new java.awt.Dimension(35, 22));
+    btnViewInvoice.setPreferredSize(new java.awt.Dimension(35, 22));
+    btnViewInvoice.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnViewInvoiceActionPerformed(evt);
+        }
+    });
+
+    btnEmail.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/email18.png"))); // NOI18N
+    btnEmail.setMaximumSize(new java.awt.Dimension(35, 22));
+    btnEmail.setMinimumSize(new java.awt.Dimension(35, 22));
+    btnEmail.setPreferredSize(new java.awt.Dimension(35, 22));
+    btnEmail.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnEmailActionPerformed(evt);
+        }
+    });
+
+    btnPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/print18.png"))); // NOI18N
+    btnPrint.setMaximumSize(new java.awt.Dimension(35, 22));
+    btnPrint.setMinimumSize(new java.awt.Dimension(35, 22));
+    btnPrint.setPreferredSize(new java.awt.Dimension(35, 22));
+    btnPrint.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnPrintActionPerformed(evt);
+        }
+    });
+
+    btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/search18.png"))); // NOI18N
+    btnSearch.setMaximumSize(new java.awt.Dimension(35, 22));
+    btnSearch.setMinimumSize(new java.awt.Dimension(35, 22));
+    btnSearch.setPreferredSize(new java.awt.Dimension(35, 22));
+    btnSearch.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnSearchActionPerformed(evt);
+        }
+    });
+
+    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+    jPanel4.setLayout(jPanel4Layout);
+    jPanel4Layout.setHorizontalGroup(
+        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+            .addComponent(btnViewInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(2, 2, 2)
+            .addComponent(btnViewReport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(2, 2, 2)
+            .addComponent(btnEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(2, 2, 2)
+            .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(2, 2, 2)
+            .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(651, 651, 651))
+    );
+    jPanel4Layout.setVerticalGroup(
+        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addComponent(btnViewInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(btnEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(btnViewReport, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(btnSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+    );
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 984, Short.MAX_VALUE)
+        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 569, Short.MAX_VALUE)
+        .addGroup(layout.createSequentialGroup()
+            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 0, 0)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE))
     );
 
     pack();
@@ -664,15 +639,7 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     }//GEN-LAST:event_btnViewReportActionPerformed
 
     private void btnViewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewInvoiceActionPerformed
-        int index = tblTicket.getSelectedRow();
-        if (index != -1) {
-            Long id = report.getSaleReportLines().get(index).getSalesInvoiceId();
 
-            Window w = SwingUtilities.getWindowAncestor(this);
-            Frame owner = w instanceof Frame ? (Frame) w : null;
-            SalesInvoiceDlg dlg = new SalesInvoiceDlg(owner);
-            dlg.showDialog(id);
-        }
     }//GEN-LAST:event_btnViewInvoiceActionPerformed
 
     private void btnEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEmailActionPerformed
@@ -718,7 +685,6 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane3;
@@ -730,8 +696,6 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
     private javax.swing.JLabel lblTotalRevenue;
     private javax.swing.JLabel lblTotalSelling;
     private javax.swing.JProgressBar progressBar;
-    private javax.swing.JScrollPane reportPane;
-    private javax.swing.JTabbedPane tabResult;
     private org.jdesktop.swingx.JXTable tblTicket;
     private javax.swing.JTextField txtCareerCode;
     private javax.swing.JTextField txtOfficeId;
@@ -764,16 +728,6 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
         cmbCashier.setEnabled(true);
     }
 
-    private void report(String action) {
-        BeanJasperReport jasperreport = new BeanJasperReport();
-        List<TicketSaleReport> list = new ArrayList<>();
-        list.add(report);
-        JRViewer viewer = jasperreport.saleReport(list, Enums.SaleType.TKTSALES, action);
-        if (viewer != null) {
-            reportPane.setViewportView(viewer);
-        }
-    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("progress".equals(evt.getPropertyName())) {
@@ -798,20 +752,4 @@ public class TicketSaleReportFrame extends JInternalFrame implements PropertyCha
             }
         }
     }
-
-    private ChangeListener tabListener = new ChangeListener() {
-
-        @Override
-        public void stateChanged(ChangeEvent e) {
-            if (tabResult.getSelectedIndex() == 1) {
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        report("VIEW");
-                    }
-                });
-            }
-        }
-    };
 }
