@@ -99,6 +99,25 @@ public class BeanJasperReport {
         return null;
     }
 
+    public JRViewer saleReport(Collection<?> beanCollection, Enums.SaleType saletype, String actionType) {
+
+        InputStream template = null;
+        if (saletype.equals(Enums.SaleType.OTHERSALES)) {
+            template = BeanJasperReport.class.getResourceAsStream("/Report/oinvoice/OAcDocumentReport.jasper");
+        } else {
+            template = BeanJasperReport.class.getResourceAsStream("/Report/pnr/TicketSaleReport.jasper");
+        }
+
+        JasperPrint jasperPrint = prepareReport(template, beanCollection);
+        if ("VIEW".equals(actionType)) {
+            return viewReport(jasperPrint);
+        } else {
+            takeAction(actionType, jasperPrint);
+        }
+
+        return null;
+    }
+    
     public JRViewer transactionReceipt(Collection<?> beanCollection, Enums.SaleType sale_type, String actionType) {
 
         InputStream template = null;

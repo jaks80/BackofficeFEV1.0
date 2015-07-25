@@ -1,5 +1,7 @@
 package com.ets.fe.pnr.model;
 
+import com.ets.fe.Application;
+import com.ets.fe.report.model.Letterhead;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,10 @@ import javax.xml.bind.annotation.*;
 public class TicketSaleReport implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    
+    @XmlElement
+    private Letterhead letterhead =  Application.getLetterhead();
+    
     @XmlElement
     private String reportTitle;
     @XmlElement
