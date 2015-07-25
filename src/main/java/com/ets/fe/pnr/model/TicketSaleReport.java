@@ -89,6 +89,20 @@ public class TicketSaleReport implements Serializable {
         this.totalRevenue = totalRevenue;
     }
 
+    /**
+     * @return the letterhead
+     */
+    public Letterhead getLetterhead() {
+        return letterhead;
+    }
+
+    /**
+     * @param letterhead the letterhead to set
+     */
+    public void setLetterhead(Letterhead letterhead) {
+        this.letterhead = letterhead;
+    }
+
     @XmlAccessorType(XmlAccessType.NONE)
     @XmlRootElement
     public static class SaleReportLine {
