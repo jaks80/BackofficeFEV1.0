@@ -88,13 +88,15 @@ public class OtherSalesAcDoc extends AccountingDocument implements Serializable 
     @Override
     public BigDecimal calculateDueAmount() {
         BigDecimal dueAmount = new BigDecimal("0.00");
-        BigDecimal invoiceAmount = getDocumentedAmount();
+        BigDecimal invoiceAmount = calculateDocumentedAmount();
 
-        if (invoiceAmount == null) {
-            invoiceAmount = calculateDocumentedAmount();
-        }
-
-        if (getType()!=null && getType().equals(Enums.AcDocType.INVOICE)) {
+        /*
+         BigDecimal invoiceAmount = getDocumentedAmount();
+         if (invoiceAmount == null) {
+         invoiceAmount = calculateDocumentedAmount();
+         }
+         */
+        if (getType() != null && getType().equals(Enums.AcDocType.INVOICE)) {
             for (AccountingDocument doc : this.relatedDocuments) {
 
                 if (doc.getDocumentedAmount() == null) {
@@ -152,7 +154,7 @@ public class OtherSalesAcDoc extends AccountingDocument implements Serializable 
         }
         return name;
     }
-        
+
     public List<OtherSalesAcDoc> getRelatedDocuments() {
         return relatedDocuments;
     }
@@ -208,10 +210,10 @@ public class OtherSalesAcDoc extends AccountingDocument implements Serializable 
     public void setAdditionalChargeLines(List<AdditionalChargeLine> additionalChargeLines) {
         this.additionalChargeLines = additionalChargeLines;
     }
-    
+
     @Override
     public BigDecimal calculateTicketedSubTotal() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

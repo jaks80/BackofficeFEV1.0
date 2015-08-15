@@ -1,7 +1,11 @@
 package com.ets.fe.util;
 
 import com.ets.fe.Application;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.swing.JOptionPane;
@@ -18,7 +22,7 @@ public class EmailService {
 
     private JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
     private Properties properties = System.getProperties();
-    
+
     private static final String SMTP_AUTH_USER = Application.getAppSettings().getEmail();
     private static final String SMTP_AUTH_PWD = Application.getAppSettings().getEmailPassword();
     private static final String SMTP_HOST = Application.getAppSettings().getEmailHost();
@@ -48,8 +52,8 @@ public class EmailService {
                     helper.setTo(new InternetAddress(recipientAddress));
                     helper.setSubject(subject);
                     helper.setText(body);
-                    if(attachment!=null){
-                     helper.addAttachment(attachmentName + ".pdf", new ByteArrayResource(attachment));
+                    if (attachment != null) {
+                        helper.addAttachment(attachmentName + ".pdf", new ByteArrayResource(attachment));
                     }
                 } catch (MessagingException ex) {
                     System.out.println(ex);
@@ -57,6 +61,48 @@ public class EmailService {
                 }
             }
         });
+        JOptionPane.showMessageDialog(null, "Email Delivered...", "Email", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public void SendMail(final Set<String> recipientAddress, final String subject, final String body, final Map<String, byte[]> attachments) {
+
+        properties.put("mail.smtp.auth", SMTP_AUTH);
+        properties.put("mail.smtp.starttls.enable", SMTP_TLS_ENABLE);
+        mailSender.setHost(SMTP_HOST);
+        mailSender.setPort(SMTP_PORT);
+        mailSender.setUsername(SMTP_AUTH_USER);
+        mailSender.setPassword(SMTP_AUTH_PWD);
+        mailSender.setJavaMailProperties(properties);
+
+        List<MimeMessagePreparator> preparatorList = new ArrayList<>();
+
+        for (final String s : recipientAddress) {
+            MimeMessagePreparator preparator = new MimeMessagePreparator() {
+                public void prepare(MimeMessage mimeMessage) throws Exception {
+                    MimeMessageHelper helper;
+                    try {
+                        helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                        helper.setFrom(new InternetAddress(SMTP_AUTH_USER));
+                        helper.setTo(new InternetAddress(s));
+                        helper.setSubject(subject);
+                        helper.setText(body);
+                        if (attachments != null) {
+                            for (Map.Entry<String, byte[]> entry : attachments.entrySet()) {
+                                helper.addAttachment(entry.getKey(), new ByteArrayResource(entry.getValue()));
+                            }
+                        }
+                    } catch (MessagingException ex) {
+                        System.out.println(ex);
+                        JOptionPane.showMessageDialog(null, "Error sending email...!!!", "Email", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+
+            };
+            preparatorList.add(preparator);
+        }
+        MimeMessagePreparator[] preparatorArray = new MimeMessagePreparator[recipientAddress.size()];
+        preparatorList.toArray(preparatorArray);
+        mailSender.send(preparatorArray);
         JOptionPane.showMessageDialog(null, "Email Delivered...", "Email", JOptionPane.WARNING_MESSAGE);
     }
 }

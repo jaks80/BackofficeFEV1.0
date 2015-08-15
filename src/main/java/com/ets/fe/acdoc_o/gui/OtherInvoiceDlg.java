@@ -81,6 +81,19 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
         setVisible(true);
     }
 
+    //Only for editing invoice.
+    public void showDialog(Long id, boolean editable) {
+        otherServiceComp.setParent(this);
+        this.editable = editable;
+        if (id != null) {
+            loadInvoice(id);            
+            //displayInvoice(this.invoice);
+        }
+        setTitle("Other Invoice (Editable)");
+        setLocationRelativeTo(this);
+        setVisible(true);
+    }
+
     private void displayInvoice(OtherSalesAcDoc invoice) {
 
         otherServiceComp.display(invoice.getAccountingDocumentLines(), editable);
@@ -124,11 +137,11 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
     }
 
     public void createInvoice() {
-        
-        if(invoice.getAccountingDocumentLines().isEmpty() || !AcDocUtil.okToInvoice(invoice.getAccountingDocumentLines())){
-         return;
+
+        if (invoice.getAccountingDocumentLines().isEmpty() || !AcDocUtil.okToInvoice(invoice.getAccountingDocumentLines())) {
+            return;
         }
-        
+
         createOtherChargeLine();
         invoice.setAdditionalChargeLines(createOtherChargeLine());
         //invoice.setAccountingDocumentLines(otherServiceComp.getLines()); Lines are added automatically
@@ -314,7 +327,7 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
         jPanel7.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         btnCreateDocument.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/createInvoice.png"))); // NOI18N
-        btnCreateDocument.setToolTipText("Create New Invoice");
+        btnCreateDocument.setToolTipText("Create New / Edited Invoice");
         btnCreateDocument.setEnabled(false);
         btnCreateDocument.setFocusable(false);
         btnCreateDocument.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -1022,7 +1035,7 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
     }//GEN-LAST:event_btnNewDocActionPerformed
 
     private void btnVoidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoidActionPerformed
-       _voidDocument();
+        _voidDocument();
     }//GEN-LAST:event_btnVoidActionPerformed
 
 
@@ -1107,8 +1120,8 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
             accountingDocTask = new AccountingDocTaskOther(doc, Enums.SaleType.OTHERSALES, "VOID");
             accountingDocTask.addPropertyChangeListener(this);
             accountingDocTask.execute();
-        }else{
-         JOptionPane.showMessageDialog (null, "Select a document to VOID.", "VOID Document", JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Select a document to VOID.", "VOID Document", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -1142,10 +1155,10 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
                         invoice = (OtherSalesAcDoc) accountingDocTask.get();
                         displayInvoice(invoice);
                         taskType = "";
-                    }else if ("VOID".equals(taskType)) {
-                        busyLabel.setBusy(false);                        
-                        loadInvoice(invoice.getId());                        
-                    } 
+                    } else if ("VOID".equals(taskType)) {
+                        busyLabel.setBusy(false);
+                        loadInvoice(invoice.getId());
+                    }
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(SalesInvoiceDlg.class.getName()).log(Level.SEVERE, null, ex);
                 } finally {
@@ -1155,7 +1168,8 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
     }
 
     private void controllComponent(OtherSalesAcDoc invoice) {
-        if (invoice.getId() == null) {
+        
+        if (editable) {
             btnCreateDocument.setEnabled(true);
             btnEmail.setEnabled(false);
             btnPrint.setEnabled(false);
@@ -1170,6 +1184,7 @@ public class OtherInvoiceDlg extends javax.swing.JDialog implements PropertyChan
             txtOther.setEditable(true);
             txtRemark.setEditable(true);
         } else {
+            setTitle("Other Invoice");
             btnCreateDocument.setEnabled(false);
             btnEmail.setEnabled(true);
             btnPrint.setEnabled(true);

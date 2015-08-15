@@ -14,26 +14,41 @@ public class CustomerWSClient {
     public Customers find(String surName, String foreName, String postCode, String telNo) {
 
         StringBuilder sb = new StringBuilder(APIConfig.get("ws.customer.customers"));
-        
+
         if (surName != null && foreName != null) {
             sb.append("?surName=").append(surName);
             sb.append("&foreName=").append(foreName);
-        }else if (surName != null ) {
-            sb.append("?surName=").append(surName);            
-        }else if (foreName != null) {
+        } else if (surName != null) {
+            sb.append("?surName=").append(surName);
+        } else if (foreName != null) {
             sb.append("?foreName=").append(foreName);
-        } 
-        
+        }
+
         if (postCode != null) {
             sb.append("?postCode=").append(postCode);
-        } 
-        
+        }
+
         if (telNo != null) {
             sb.append("?telNo=").append(telNo);
         }
 
         return RestClientUtil.getEntity(Customers.class, sb.toString(), new Customers());
+    }
 
+    public Customers find(String keyword) {
+
+        StringBuilder sb = new StringBuilder(APIConfig.get("ws.customer.customers"));
+        sb.append("/ks");
+        if (keyword != null && !keyword.isEmpty()) {
+            sb.append("?keyword=").append(keyword);
+        }
+
+        return RestClientUtil.getEntity(Customers.class, sb.toString(), new Customers());
+    }
+
+    public Customers findCustomersWithEmail() {
+        String sb = APIConfig.get("ws.customer.customerswithemail");
+        return RestClientUtil.getEntity(Customers.class, sb, new Customers());
     }
 
     public Customer create(Customer customer) {

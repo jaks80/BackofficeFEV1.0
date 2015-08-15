@@ -6,11 +6,16 @@ import com.ets.fe.acdoc.model.TicketingPurchaseAcDoc;
 import com.ets.fe.accounts.model.AccountsReport;
 import com.ets.fe.acdoc.model.BSPReport;
 import com.ets.fe.acdoc.model.report.InvoiceReport;
+import com.ets.fe.client.collection.Agents;
+import com.ets.fe.client.collection.Customers;
+import com.ets.fe.client.model.Agent;
+import com.ets.fe.client.model.Customer;
 import com.ets.fe.productivity.model.ProductivityReport;
 import com.ets.fe.util.DateUtil;
 import com.ets.fe.util.Enums;
 import com.ets.fe.util.RestClientUtil;
 import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 import org.apache.http.HttpResponse;
 
@@ -160,4 +165,13 @@ public class TicketingPAcDocWSClient {
         ProductivityReport report = RestClientUtil.getEntity(ProductivityReport.class, sb.toString(), new ProductivityReport());
         return report;
     }
+    
+    public List<Agent> outstandingAgents(Enums.AcDocType doctype) {
+
+        Agents agents = new Agents();
+        String url = APIConfig.get("ws.tpacdoc.dueagents")+"?doctype="+doctype;
+        agents = RestClientUtil.getEntity(Agents.class, url, agents);
+        return agents.getList();
+    }
+
 }

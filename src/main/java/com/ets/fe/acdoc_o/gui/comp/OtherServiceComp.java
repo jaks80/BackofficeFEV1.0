@@ -3,6 +3,7 @@ package com.ets.fe.acdoc_o.gui.comp;
 import com.ets.fe.acdoc.bo.AcDocUtil;
 import com.ets.fe.acdoc_o.gui.OtherInvoiceDlg;
 import com.ets.fe.acdoc.gui.SalesInvoiceDlg;
+import com.ets.fe.acdoc.task.DeleteDocumentLineTask;
 import com.ets.fe.acdoc_o.model.AccountingDocumentLine;
 import com.ets.fe.os.task.OtherServiceTask;
 import com.ets.fe.os.model.OtherService;
@@ -22,6 +23,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -37,9 +39,11 @@ public class OtherServiceComp extends javax.swing.JPanel implements PropertyChan
     private List<AccountingDocumentLine> lines = new ArrayList<>();
     private List<OtherService> services = new ArrayList<>();
     private OtherServiceTask task;
+    private DeleteDocumentLineTask deleteDocumentLineTask;
     private JComboBox cmbServices;
     private boolean editable;
     private JDialog parent;
+    private String taskType;
 
     public OtherServiceComp() {
         initComponents();
@@ -50,19 +54,29 @@ public class OtherServiceComp extends javax.swing.JPanel implements PropertyChan
     }
 
     public void loadOtherService() {
-        task = new OtherServiceTask(null,null);
+        taskType = "LOAD";
+        task = new OtherServiceTask(null, null);
         task.addPropertyChangeListener(this);
         task.execute();
     }
 
+    public void deleteLine(Long line_id) {
+        taskType = "DELETE_LINE";
+        deleteDocumentLineTask = new DeleteDocumentLineTask(line_id);
+        deleteDocumentLineTask.addPropertyChangeListener(this);
+        deleteDocumentLineTask.execute();
+    }
+
     public void display(List<AccountingDocumentLine> lines, boolean editable) {
         this.editable = editable;
+        this.lines = lines;
+        tblServices.setEnabled(editable);
 
-        if (lines.isEmpty()) {
+        //if (lines.isEmpty() || editable) {
+        if (editable) {
             loadOtherService();
         } else {
-            this.lines = lines;
-            tblServices.setEnabled(editable);
+            //this.lines = lines;
             populatetblInvLine();
         }
     }
@@ -109,7 +123,7 @@ public class OtherServiceComp extends javax.swing.JPanel implements PropertyChan
                 line.getAmount(), line.getDiscount(), line.getQty(), line.calculateOServiceLineTotal()});
         }
         servicesModel.addRow(new Object[]{"", "", "", "", "", "", ""});
-        tblServices.getSelectionModel().clearSelection();//Never ever remove it.Add where ever use table model listener             
+        tblServices.getSelectionModel().clearSelection();//Never ever remove it.Add where ever use table model listener
 
         if (parent instanceof OtherInvoiceDlg) {
             OtherInvoiceDlg dlg = (OtherInvoiceDlg) parent;
@@ -246,7 +260,10 @@ public class OtherServiceComp extends javax.swing.JPanel implements PropertyChan
 
     private void btnRemoveItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveItemActionPerformed
         if (editable) {
-            removeItem();
+            int choice = JOptionPane.showConfirmDialog(null, "Delete imte permanently?", "Delete Item", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                removeItem();
+            }
         }
     }//GEN-LAST:event_btnRemoveItemActionPerformed
 
@@ -260,7 +277,12 @@ public class OtherServiceComp extends javax.swing.JPanel implements PropertyChan
     private void removeItem() {
         int index = tblServices.getSelectedRow();
         if (index != -1) {
-            this.lines.remove(index);
+            AccountingDocumentLine line = this.lines.get(index);
+            if (line.getId() == null) {
+                this.lines.remove(index);
+            } else {
+                deleteLine(line.getId());
+            }
             populatetblInvLine();
         }
     }
@@ -290,10 +312,14 @@ public class OtherServiceComp extends javax.swing.JPanel implements PropertyChan
             int progress = (Integer) evt.getNewValue();
             if (progress == 100) {
                 try {
-                    OtherServices otherservices = task.get();
-                    services = otherservices.getList();
-                    initTblServices();
-                    populatetblInvLine();
+                    if ("LOAD".equals(taskType)) {
+                        OtherServices otherservices = task.get();
+                        services = otherservices.getList();
+                        initTblServices();
+                        populatetblInvLine();
+                    } else if ("DELETE_LINE".equals(taskType)) {
+                        //loadOtherService();
+                    }
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(SalesInvoiceDlg.class.getName()).log(Level.SEVERE, null, ex);
                 } finally {

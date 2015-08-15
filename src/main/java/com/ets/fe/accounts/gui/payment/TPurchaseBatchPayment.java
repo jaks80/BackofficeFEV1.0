@@ -45,6 +45,7 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
     private PaymentTask paymentTask;
     private List<TicketingPurchaseAcDoc> invoices;
     private String taskType;
+    private Enums.AcDocType doc_type = Enums.AcDocType.INVOICE;
 
     public TPurchaseBatchPayment(JDesktopPane desktopPane) {
         this.desktopPane = desktopPane;
@@ -56,16 +57,17 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
         c.setNegativeAccepted(true);
         txtAmount.setDocument(c);
         setPaymentType();
+        loadDueAgents();
     }
 
     private void search() {
-        Long client_id = documentSearchComponent.getClient_id();
+        Long client_id = clientSearchComponent.getClient_id();
         if (client_id != null) {
             taskType = "SEARCH";
             btnSearch.setEnabled(false);
             Date from = dtFrom.getDate();
             Date to = dtTo.getDate();
-            task = new DueInvoiceTask(Enums.TicketingType.THIRDPARY, Enums.AcDocType.INVOICE, Enums.ClientType.AGENT, client_id, from, to, progressBar, "PURCHASE");
+            task = new DueInvoiceTask(Enums.TicketingType.THIRDPARY, doc_type, Enums.ClientType.AGENT, client_id, from, to, progressBar, "PURCHASE");
             task.addPropertyChangeListener(this);
             task.execute();
         }
@@ -273,7 +275,7 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
         btnEmail = new javax.swing.JButton();
         btnPrint = new javax.swing.JButton();
         btnSearch = new javax.swing.JButton();
-        documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false, false, false,Enums.AgentType.TICKETING_AGT);
+        clientSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false, false, false,Enums.AgentType.TICKETING_AGT);
         jSeparator2 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -421,7 +423,7 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
             .addComponent(btnSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
-        documentSearchComponent.setPreferredSize(new java.awt.Dimension(170, 199));
+        clientSearchComponent.setPreferredSize(new java.awt.Dimension(170, 199));
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -719,7 +721,7 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(documentSearchComponent, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE))
+                                .addComponent(clientSearchComponent, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE))
                             .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(4, 4, 4)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -744,7 +746,7 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
                         .addGap(16, 16, 16)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(documentSearchComponent, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(clientSearchComponent, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
@@ -790,8 +792,8 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
     private org.jdesktop.swingx.JXBusyLabel busyLabel;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox chkReverseEntry;
+    private com.ets.fe.acdoc.gui.comp.ClientSearchComp clientSearchComponent;
     private javax.swing.JComboBox cmbTType;
-    private com.ets.fe.acdoc.gui.comp.ClientSearchComp documentSearchComponent;
     private org.jdesktop.swingx.JXDatePicker dtFrom;
     private org.jdesktop.swingx.JXDatePicker dtTo;
     private javax.swing.JLabel jLabel1;
@@ -886,4 +888,13 @@ public class TPurchaseBatchPayment extends javax.swing.JInternalFrame implements
             }
         }
     }
+    
+        private void loadDueAgents() {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.TICKETING_PURCHASE_DUE_INVOICE);
+        this.doc_type = Enums.AcDocType.INVOICE;
+        clientSearchComponent.setAcDocType(doc_type);
+        clientSearchComponent.setClient_type(Enums.ClientType.AGENT);
+        clientSearchComponent.dueAgentTask();
+    }
+
 }

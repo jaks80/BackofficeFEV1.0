@@ -3,11 +3,9 @@ package com.ets.fe.accounts.gui.payment;
 import com.ets.fe.accounts.model.Payment;
 import com.ets.fe.Application;
 import com.ets.fe.accounts.gui.logic.PaymentLogic;
-import com.ets.fe.acdoc.gui.SalesInvoiceDlg;
 import com.ets.fe.acdoc.model.*;
 import com.ets.fe.accounts.task.PaymentTask;
 import com.ets.fe.acdoc_o.gui.OtherInvoiceDlg;
-import com.ets.fe.acdoc_o.gui.OtherSalesAcDocumentDlg;
 import com.ets.fe.acdoc_o.model.OtherSalesAcDoc;
 import com.ets.fe.acdoc_o.task.OtherDueInvoiceTask;
 import com.ets.fe.util.CheckInput;
@@ -49,6 +47,7 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
     private PaymentTask paymentTask;
     private List<OtherSalesAcDoc> invoices;
     private String taskType;
+    private Enums.AcDocType doc_type = Enums.AcDocType.INVOICE;
 
     public OtherSalesBatchPayment(JDesktopPane desktopPane) {
         this.desktopPane = desktopPane;
@@ -60,17 +59,18 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
         c.setNegativeAccepted(true);
         txtAmount.setDocument(c);
         setPaymentType();
+        loadDueAgents();
     }
 
     private void search() {
-        Long client_id = documentSearchComponent.getClient_id();
+        Long client_id = clientSearchComponent.getClient_id();
         if (client_id != null) {
             taskType = "SEARCH";
             btnSearch.setEnabled(false);
 
             Date from = dtFrom.getDate();
             Date to = dtTo.getDate();
-            task = new OtherDueInvoiceTask(Enums.AcDocType.INVOICE, Enums.ClientType.AGENT, client_id, from, to, progressBar, "OTHER");
+            task = new OtherDueInvoiceTask(doc_type, Enums.ClientType.AGENT, client_id, from, to, progressBar, "OTHER");
             task.addPropertyChangeListener(this);
             task.execute();
         }
@@ -278,7 +278,7 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
         btnEmail = new javax.swing.JButton();
         btnPrint = new javax.swing.JButton();
         btnSearch = new javax.swing.JButton();
-        documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false, false, false,Enums.AgentType.ALL);
+        clientSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false, false, false,Enums.AgentType.ALL);
         jSeparator2 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -432,7 +432,7 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
             .addComponent(btnSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
-        documentSearchComponent.setPreferredSize(new java.awt.Dimension(170, 199));
+        clientSearchComponent.setPreferredSize(new java.awt.Dimension(170, 199));
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -729,7 +729,7 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(documentSearchComponent, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                            .addComponent(clientSearchComponent, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -754,7 +754,7 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(documentSearchComponent, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(clientSearchComponent, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
@@ -804,8 +804,8 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
     private org.jdesktop.swingx.JXBusyLabel busyLabel;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox chkReverseEntry;
+    private com.ets.fe.acdoc.gui.comp.ClientSearchComp clientSearchComponent;
     private javax.swing.JComboBox cmbTType;
-    private com.ets.fe.acdoc.gui.comp.ClientSearchComp documentSearchComponent;
     private org.jdesktop.swingx.JXDatePicker dtFrom;
     private org.jdesktop.swingx.JXDatePicker dtTo;
     private javax.swing.JLabel jLabel1;
@@ -900,4 +900,13 @@ public class OtherSalesBatchPayment extends javax.swing.JInternalFrame implement
             }
         }
     }
+    
+        private void loadDueAgents() {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.OTHER_SALES_DUE_INVOICE);
+        this.doc_type = Enums.AcDocType.INVOICE;
+        clientSearchComponent.setAcDocType(doc_type);
+        clientSearchComponent.setClient_type(Enums.ClientType.AGENT);
+        clientSearchComponent.dueAgentTask();
+    }
+
 }

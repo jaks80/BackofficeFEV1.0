@@ -1,5 +1,7 @@
 package com.ets.fe.acdoc.gui.comp;
 
+import com.ets.fe.acdoc.task.DueAgentSearchTask;
+import com.ets.fe.acdoc.task.DueCustomerSearchTask;
 import com.ets.fe.client.collection.Agents;
 import com.ets.fe.client.collection.Customers;
 import com.ets.fe.client.task.AgentSearchTask;
@@ -7,6 +9,7 @@ import com.ets.fe.client.task.CustomerSearchTask;
 import com.ets.fe.client.model.Agent;
 import com.ets.fe.client.model.Customer;
 import com.ets.fe.util.Enums;
+import com.ets.fe.util.Enums.ClientSearchType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -24,30 +27,35 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
  *
  * @author Yusuf
  */
-public class ClientSearchComp extends javax.swing.JPanel implements PropertyChangeListener {    
-   
+public class ClientSearchComp extends javax.swing.JPanel implements PropertyChangeListener {
+
     private AgentSearchTask agentTask;
+    private DueAgentSearchTask dueAgentSearchTask;
+    private DueCustomerSearchTask dueCustomerSearchTask;
+
     private CustomerSearchTask customerTask;
 
     private List<Customer> customerList = new ArrayList<>();
     private List<Agent> agentList = new ArrayList<>();
     private Enums.ClientType client_type;
-     private Enums.AgentType agentType;
+    private Enums.AgentType agentType;
     private Long client_id;
+    private ClientSearchType search_type = Enums.ClientSearchType.ALL;//ALL/DUE/
+    private Enums.AcDocType acDocType = null;
 
     public ClientSearchComp() {
         initComponents();
     }
-    
-    public ClientSearchComp(boolean _rdoAgent, boolean _rdoCustomer, boolean _rdoAll,Enums.AgentType agentType) {
+
+    public ClientSearchComp(boolean _rdoAgent, boolean _rdoCustomer, boolean _rdoAll, Enums.AgentType agentType) {
         initComponents();
         this.agentType = agentType;
         rdoAgent.setVisible(_rdoAgent);
         rdoCustomer.setVisible(_rdoCustomer);
         rdoAll.setVisible(_rdoAll);
-        rdoAgent.doClick();
+        rdoAll.doClick();
     }
-        
+
     private void displayAgent() {
         List cmbElement = new ArrayList();
 
@@ -83,9 +91,16 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
 
     public void agentTask() {
         busyLabel.setBusy(true);
-        agentTask = new AgentSearchTask(busyLabel,agentType);
+        agentTask = new AgentSearchTask(busyLabel, agentType);
         agentTask.addPropertyChangeListener(this);
         agentTask.execute();
+    }
+
+    public void dueAgentTask() {
+        busyLabel.setBusy(true);
+        dueAgentSearchTask = new DueAgentSearchTask(busyLabel, acDocType, search_type);
+        dueAgentSearchTask.addPropertyChangeListener(this);
+        dueAgentSearchTask.execute();
     }
 
     private void customerTask() {
@@ -95,13 +110,24 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
         customerTask.execute();
     }
 
+    private void dueCustomerTask() {
+        busyLabel.setBusy(true);
+        dueCustomerSearchTask = new DueCustomerSearchTask(busyLabel, acDocType, search_type);
+        dueCustomerSearchTask.addPropertyChangeListener(this);
+        dueCustomerSearchTask.execute();
+    }
+
     private ActionListener radioAgentListener = new ActionListener() {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            agentTask();
-            client_type = Enums.ClientType.AGENT;
-            txtClientDetails.setText("");           
+            if (Enums.AcDocType.INVOICE.equals(acDocType) || Enums.AcDocType.REFUND.equals(acDocType)) {
+                dueAgentTask();
+            } else {
+                agentTask();
+            }
+            setClient_type(Enums.ClientType.AGENT);
+            txtClientDetails.setText("");
         }
     };
 
@@ -109,9 +135,13 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            customerTask();
-            client_type = Enums.ClientType.CUSTOMER;
-            txtClientDetails.setText("");            
+            if (Enums.AcDocType.INVOICE.equals(acDocType) || Enums.AcDocType.REFUND.equals(acDocType)) {
+                dueCustomerTask();
+            } else {
+                customerTask();
+            }
+            setClient_type(Enums.ClientType.CUSTOMER);
+            txtClientDetails.setText("");
         }
     };
 
@@ -119,9 +149,10 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
 
         public void actionPerformed(ActionEvent e) {
             txtClientDetails.setText("");
+            busyLabel.setText("");
             cmbContactable.setSelectedIndex(-1);
             cmbContactable.setEnabled(false);
-            client_type = null;
+            setClient_type(null);
         }
     };
 
@@ -133,11 +164,11 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
             if (cmbContactable.getSelectedIndex() > 0) {
                 data = cmbContactable.getSelectedItem().toString().split("-");
                 id = Long.parseLong(data[2]);
-            }else if(cmbContactable.getSelectedIndex() == 0){
-               txtClientDetails.setText("");
+            } else if (cmbContactable.getSelectedIndex() == 0) {
+                txtClientDetails.setText("");
             }
 
-            if (rdoAgent.isSelected()) {
+            if (Enums.ClientType.AGENT.equals(client_type)) {
                 loop:
                 for (Agent a : agentList) {
                     if (a.getId() == id) {
@@ -146,7 +177,7 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
                         break loop;
                     }
                 }
-            } else if (rdoCustomer.isSelected()) {
+            } else if (Enums.ClientType.CUSTOMER.equals(client_type)) {
                 loop:
                 for (Customer c : customerList) {
                     if (c.getId() == id) {
@@ -187,6 +218,7 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
 
         buttonGroup1.add(rdoAgent);
         rdoAgent.setText("Agent");
+        rdoAgent.setToolTipText("Click to load Agents");
         rdoAgent.addActionListener(radioAgentListener);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -197,6 +229,7 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
 
         buttonGroup1.add(rdoCustomer);
         rdoCustomer.setText("Customer");
+        rdoCustomer.setToolTipText("Click to load Customers");
         rdoCustomer.addActionListener(radioCustomerListener);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -225,6 +258,7 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
         add(jLabel1, gridBagConstraints);
 
         cmbContactable.setEditable(true);
+        cmbContactable.setToolTipText("Select Agent/Customer/All");
         cmbContactable.setMaximumSize(new java.awt.Dimension(28, 19));
         cmbContactable.setMinimumSize(new java.awt.Dimension(28, 19));
         cmbContactable.setPreferredSize(new java.awt.Dimension(28, 19));
@@ -262,6 +296,8 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jScrollPane1, gridBagConstraints);
+
+        busyLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -291,14 +327,37 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
             int progress = (Integer) evt.getNewValue();
             if (progress == 100) {
                 try {
-                    if (rdoAgent.isSelected()) {
-                        Agents agents = (Agents) agentTask.get();
-                        agentList = agents.getList();
+                    if (Enums.AgentType.TICKETING_AGT.equals(agentType)) {
+                        if (Enums.ClientSearchType.TICKETING_PURCHASE_DUE_INVOICE.equals(search_type)
+                                || Enums.ClientSearchType.TICKETING_PURCHASE_DUE_REFUND.equals(search_type)) {
+                            agentList = dueAgentSearchTask.get();
+
+                        } else {
+                            Agents agents = (Agents) agentTask.get();
+                            agentList = agents.getList();
+                        }
+                        busyLabel.setText(agentList.size() + " Agents");
                         displayAgent();
-                    } else if (rdoCustomer.isSelected()) {
-                        Customers customers = (Customers) customerTask.get();
-                        customerList = customers.getList();
-                        displayCustomer();
+                    } else {
+                        if (Enums.ClientType.AGENT.equals(client_type)) {
+                            if (Enums.AcDocType.INVOICE.equals(acDocType) || Enums.AcDocType.REFUND.equals(acDocType)) {
+                                agentList = dueAgentSearchTask.get();
+                            } else {
+                                Agents agents = (Agents) agentTask.get();
+                                agentList = agents.getList();
+                            }
+                            busyLabel.setText(agentList.size() + " Agents");
+                            displayAgent();
+                        } else if (Enums.ClientType.CUSTOMER.equals(client_type)) {
+                            if (Enums.AcDocType.INVOICE.equals(acDocType) || Enums.AcDocType.REFUND.equals(acDocType)) {
+                                customerList = dueCustomerSearchTask.get();
+                            } else {
+                                Customers customers = (Customers) customerTask.get();
+                                customerList = customers.getList();
+                            }
+                            busyLabel.setText(customerList.size() + " Customers");
+                            displayCustomer();
+                        }
                     }
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(ClientSearchComp.class.getName()).log(Level.SEVERE, null, ex);
@@ -323,7 +382,7 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
     public Enums.ClientType getContactableType() {
         return client_type;
     }
-    
+
     public Long getClient_id() {
         return client_id;
     }
@@ -331,5 +390,26 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
     public Enums.ClientType getClient_type() {
         return client_type;
     }
-    
+
+    /**
+     * @param search_type the search_type to set
+     */
+    public void setSearch_type(ClientSearchType search_type) {
+        this.search_type = search_type;
+    }
+
+    /**
+     * @param acDocType the acDocType to set
+     */
+    public void setAcDocType(Enums.AcDocType acDocType) {
+        this.acDocType = acDocType;
+    }
+
+    /**
+     * @param client_type the client_type to set
+     */
+    public void setClient_type(Enums.ClientType client_type) {
+        this.client_type = client_type;
+    }
+
 }

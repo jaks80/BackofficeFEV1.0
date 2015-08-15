@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class TPurchaseInvoiceReportingFrame extends javax.swing.JInternalFrame i
     private JDesktopPane desktopPane;
     private PurchaseAcDocReportingTask task;
     private InvoiceReport report;
+    private Enums.AcDocType doc_type;
 
     public TPurchaseInvoiceReportingFrame(JDesktopPane desktopPane) {
         this.desktopPane = desktopPane;
@@ -51,7 +54,7 @@ public class TPurchaseInvoiceReportingFrame extends javax.swing.JInternalFrame i
     private void search() {
 
         btnSearch.setEnabled(false);
-        Long client_id = documentSearchComponent.getClient_id();
+        Long client_id = clientSearchComponent.getClient_id();
         Date from = dtFrom.getDate();
         Date to = dtTo.getDate();
 
@@ -115,7 +118,7 @@ public class TPurchaseInvoiceReportingFrame extends javax.swing.JInternalFrame i
         rdoDueInvoice = new javax.swing.JRadioButton();
         rdoDueRefund = new javax.swing.JRadioButton();
         rdoInvHistory = new javax.swing.JRadioButton();
-        documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false,false,false,Enums.AgentType.TICKETING_AGT);
+        clientSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false,false,false,Enums.AgentType.TICKETING_AGT);
         progressBar = new javax.swing.JProgressBar();
         jLabel2 = new javax.swing.JLabel();
         tabResult = new javax.swing.JTabbedPane();
@@ -175,13 +178,15 @@ public class TPurchaseInvoiceReportingFrame extends javax.swing.JInternalFrame i
 
         buttonGroup1.add(rdoDueInvoice);
         rdoDueInvoice.setText("Outstanding Invoice");
+        rdoDueInvoice.addActionListener(radioDueInvoiceListener);
 
         buttonGroup1.add(rdoDueRefund);
         rdoDueRefund.setText("Outstanding Refund");
+        rdoDueRefund.addActionListener(radioDueRefundListener);
 
         buttonGroup1.add(rdoInvHistory);
-        rdoInvHistory.setSelected(true);
         rdoInvHistory.setText("Invoice Hisory");
+        rdoInvHistory.addActionListener(radioHistoryListener);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -240,7 +245,7 @@ public class TPurchaseInvoiceReportingFrame extends javax.swing.JInternalFrame i
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        jPanel5.add(documentSearchComponent, gridBagConstraints);
+        jPanel5.add(clientSearchComponent, gridBagConstraints);
 
         progressBar.setMaximumSize(new java.awt.Dimension(32767, 18));
         progressBar.setMinimumSize(new java.awt.Dimension(10, 18));
@@ -575,7 +580,7 @@ public class TPurchaseInvoiceReportingFrame extends javax.swing.JInternalFrame i
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnViewInvoice;
     private javax.swing.ButtonGroup buttonGroup1;
-    private com.ets.fe.acdoc.gui.comp.ClientSearchComp documentSearchComponent;
+    private com.ets.fe.acdoc.gui.comp.ClientSearchComp clientSearchComponent;
     private org.jdesktop.swingx.JXDatePicker dtFrom;
     private org.jdesktop.swingx.JXDatePicker dtTo;
     private javax.swing.JLabel jLabel1;
@@ -651,5 +656,26 @@ public class TPurchaseInvoiceReportingFrame extends javax.swing.JInternalFrame i
                 });
             }
         }
+    };
+    
+    private ActionListener radioHistoryListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.ALL);
+        this.doc_type = null;
+        clientSearchComponent.setAcDocType(doc_type);
+        clientSearchComponent.agentTask();
+    };
+
+    private ActionListener radioDueInvoiceListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.TICKETING_PURCHASE_DUE_INVOICE);
+        this.doc_type = Enums.AcDocType.INVOICE;
+        clientSearchComponent.setAcDocType(doc_type);
+        clientSearchComponent.dueAgentTask();
+    };
+
+    private ActionListener radioDueRefundListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.TICKETING_PURCHASE_DUE_REFUND);
+        this.doc_type = Enums.AcDocType.REFUND;
+        clientSearchComponent.setAcDocType(doc_type);
+        clientSearchComponent.dueAgentTask();
     };
 }

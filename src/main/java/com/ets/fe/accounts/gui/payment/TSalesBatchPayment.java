@@ -48,6 +48,7 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
     private List<TicketingSalesAcDoc> invoices;
     //private InvoiceReport report;
     private String taskType;
+    private Enums.AcDocType doc_type = Enums.AcDocType.INVOICE;
 
     public TSalesBatchPayment(JDesktopPane desktopPane) {
         this.desktopPane = desktopPane;
@@ -60,16 +61,17 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
         txtAmount.setDocument(c);
         //btnSubmitPayment.setEnabled(false);
         setPaymentType();
+        loadDueAgents();
     }
 
     private void search() {
-        Long client_id = documentSearchComponent.getClient_id();
+        Long client_id = clientSearchComponent.getClient_id();
         if (client_id != null) {
             taskType = "SEARCH";
             btnSearch.setEnabled(false);
             Date from = dtFrom.getDate();
             Date to = dtTo.getDate();
-            task = new DueInvoiceTask(null, Enums.AcDocType.INVOICE, Enums.ClientType.AGENT, client_id, from, to, progressBar, "SALES");
+            task = new DueInvoiceTask(null, doc_type, Enums.ClientType.AGENT, client_id, from, to, progressBar, "SALES");
             task.addPropertyChangeListener(this);
             task.execute();
         }
@@ -84,12 +86,12 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
         String remark = txtRef.getText();
 
         if (!amountString.isEmpty() && !remark.isEmpty() && cmbTType.getSelectedIndex() > 0) {
-            
+
             int choice = JOptionPane.showConfirmDialog(null, "Submit Payment? " + amountString, "Submit Payment", JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.NO_OPTION) {
                 return;
             }
-            
+
             BigDecimal amount = new BigDecimal(amountString.trim());
             PaymentLogic logic = new PaymentLogic();
 
@@ -125,7 +127,7 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
                 }
 
                 if (!payment.gettSalesAcDocuments().isEmpty()) {
-                    paymentTask = new PaymentTask(payment,Enums.TaskType.CREATE);
+                    paymentTask = new PaymentTask(payment, Enums.TaskType.CREATE);
                     paymentTask.addPropertyChangeListener(this);
                     paymentTask.execute();
                 } else {
@@ -267,28 +269,24 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
         java.awt.GridBagConstraints gridBagConstraints;
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jPanel3 = new javax.swing.JPanel();
-        progressBar = new javax.swing.JProgressBar();
-        jSeparator1 = new javax.swing.JSeparator();
-        jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         btnViewReport = new javax.swing.JButton();
         btnViewInvoice = new javax.swing.JButton();
         btnEmail = new javax.swing.JButton();
         btnPrint = new javax.swing.JButton();
         btnSearch = new javax.swing.JButton();
-        documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false, false, false,Enums.AgentType.ALL);
-        jSeparator2 = new javax.swing.JSeparator();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        lblInvAmount = new javax.swing.JLabel();
-        lblOther = new javax.swing.JLabel();
-        lblDMemo = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        lblPayment = new javax.swing.JLabel();
-        lblDue = new javax.swing.JLabel();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        dtFrom = new org.jdesktop.swingx.JXDatePicker();
+        jLabel8 = new javax.swing.JLabel();
+        dtTo = new org.jdesktop.swingx.JXDatePicker();
+        clientSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(false, false, false,Enums.AgentType.ALL);
+        progressBar = new javax.swing.JProgressBar();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel9 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblInvoices =         new JXTable() {
             public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
@@ -302,11 +300,16 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
                 return c;
             }
         };
-        jPanel4 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        dtFrom = new org.jdesktop.swingx.JXDatePicker();
-        jLabel8 = new javax.swing.JLabel();
-        dtTo = new org.jdesktop.swingx.JXDatePicker();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        lblInvAmount = new javax.swing.JLabel();
+        lblOther = new javax.swing.JLabel();
+        lblDMemo = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        lblPayment = new javax.swing.JLabel();
+        lblDue = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
@@ -317,7 +320,6 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
         btnSubmitPayment = new javax.swing.JButton();
         busyLabel = new org.jdesktop.swingx.JXBusyLabel();
         chkReverseEntry = new javax.swing.JCheckBox();
-        jLabel7 = new javax.swing.JLabel();
 
         setClosable(true);
         setMaximizable(true);
@@ -326,44 +328,6 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
         setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/TicketBatchPayment20.png"))); // NOI18N
         setMinimumSize(new java.awt.Dimension(1000, 500));
         setPreferredSize(new java.awt.Dimension(1000, 500));
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel3.setMaximumSize(new java.awt.Dimension(32767, 24));
-        jPanel3.setMinimumSize(new java.awt.Dimension(71, 24));
-        jPanel3.setPreferredSize(new java.awt.Dimension(980, 24));
-        jPanel3.setLayout(new java.awt.GridBagLayout());
-
-        progressBar.setMaximumSize(new java.awt.Dimension(32767, 18));
-        progressBar.setMinimumSize(new java.awt.Dimension(10, 18));
-        progressBar.setPreferredSize(new java.awt.Dimension(146, 18));
-        progressBar.setStringPainted(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 0, 1);
-        jPanel3.add(progressBar, gridBagConstraints);
-
-        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
-        jPanel3.add(jSeparator1, gridBagConstraints);
-
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Message:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(1, 2, 1, 2);
-        jPanel3.add(jLabel2, gridBagConstraints);
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -433,9 +397,138 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
             .addComponent(btnSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
-        documentSearchComponent.setPreferredSize(new java.awt.Dimension(170, 199));
+        jSplitPane1.setDividerLocation(200);
+        jSplitPane1.setDividerSize(10);
+        jSplitPane1.setOneTouchExpandable(true);
 
-        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("Batch Payment");
+
+        jLabel6.setText("Date From");
+
+        dtFrom.setPreferredSize(new java.awt.Dimension(110, 20));
+
+        jLabel8.setText("Date To");
+
+        dtTo.setPreferredSize(new java.awt.Dimension(110, 20));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(dtFrom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(dtTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel8))
+                        .addContainerGap())))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel6)
+                .addGap(2, 2, 2)
+                .addComponent(dtFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8)
+                .addGap(2, 2, 2)
+                .addComponent(dtTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        clientSearchComponent.setPreferredSize(new java.awt.Dimension(170, 199));
+
+        progressBar.setMaximumSize(new java.awt.Dimension(32767, 18));
+        progressBar.setMinimumSize(new java.awt.Dimension(10, 18));
+        progressBar.setPreferredSize(new java.awt.Dimension(146, 18));
+        progressBar.setStringPainted(true);
+
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("Message:");
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(clientSearchComponent, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(clientSearchComponent, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 118, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(6, 6, 6)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jSplitPane1.setLeftComponent(jPanel7);
+
+        tblInvoices.setBackground(new java.awt.Color(51, 51, 51));
+        tblInvoices.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "", "Date", "Reference", "PNR", "Psgr", "Inv Amount", "Payment", "Other (+/-)", "Due", "NewPayment", "Full Pay?"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, true, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblInvoices.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        tblInvoices.setSelectionBackground(new java.awt.Color(255, 255, 153));
+        tblInvoices.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tblInvoices.setSortable(false);
+        tblInvoices.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tblInvoices);
+        if (tblInvoices.getColumnModel().getColumnCount() > 0) {
+            tblInvoices.getColumnModel().getColumn(0).setMinWidth(40);
+            tblInvoices.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tblInvoices.getColumnModel().getColumn(0).setMaxWidth(60);
+            tblInvoices.getColumnModel().getColumn(1).setMinWidth(80);
+            tblInvoices.getColumnModel().getColumn(1).setPreferredWidth(80);
+            tblInvoices.getColumnModel().getColumn(1).setMaxWidth(80);
+            tblInvoices.getColumnModel().getColumn(4).setMinWidth(40);
+            tblInvoices.getColumnModel().getColumn(4).setPreferredWidth(40);
+            tblInvoices.getColumnModel().getColumn(4).setMaxWidth(40);
+            tblInvoices.getColumnModel().getColumn(10).setMinWidth(60);
+            tblInvoices.getColumnModel().getColumn(10).setPreferredWidth(60);
+            tblInvoices.getColumnModel().getColumn(10).setMaxWidth(80);
+        }
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -539,88 +632,6 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
         jPanel2.add(lblDue, gridBagConstraints);
 
-        tblInvoices.setBackground(new java.awt.Color(51, 51, 51));
-        tblInvoices.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "", "Date", "Reference", "PNR", "Psgr", "Inv Amount", "Payment", "Other (+/-)", "Due", "NewPayment", "Full Pay?"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, true, true
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblInvoices.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        tblInvoices.setSelectionBackground(new java.awt.Color(255, 255, 153));
-        tblInvoices.setSelectionForeground(new java.awt.Color(0, 0, 0));
-        tblInvoices.setSortable(false);
-        tblInvoices.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(tblInvoices);
-        if (tblInvoices.getColumnModel().getColumnCount() > 0) {
-            tblInvoices.getColumnModel().getColumn(0).setMinWidth(40);
-            tblInvoices.getColumnModel().getColumn(0).setPreferredWidth(40);
-            tblInvoices.getColumnModel().getColumn(0).setMaxWidth(60);
-            tblInvoices.getColumnModel().getColumn(1).setMinWidth(80);
-            tblInvoices.getColumnModel().getColumn(1).setPreferredWidth(80);
-            tblInvoices.getColumnModel().getColumn(1).setMaxWidth(80);
-            tblInvoices.getColumnModel().getColumn(4).setMinWidth(40);
-            tblInvoices.getColumnModel().getColumn(4).setPreferredWidth(40);
-            tblInvoices.getColumnModel().getColumn(4).setMaxWidth(40);
-            tblInvoices.getColumnModel().getColumn(10).setMinWidth(60);
-            tblInvoices.getColumnModel().getColumn(10).setPreferredWidth(60);
-            tblInvoices.getColumnModel().getColumn(10).setMaxWidth(80);
-        }
-
-        jLabel6.setText("Date From");
-
-        dtFrom.setPreferredSize(new java.awt.Dimension(110, 20));
-
-        jLabel8.setText("Date To");
-
-        dtTo.setPreferredSize(new java.awt.Dimension(110, 20));
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(2, 2, 2)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(dtFrom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(dtTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel8))
-                        .addContainerGap())))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addGap(2, 2, 2)
-                .addComponent(dtFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
-                .addGap(2, 2, 2)
-                .addComponent(dtTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Submit Payment", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
         jPanel8.setLayout(new java.awt.GridBagLayout());
 
@@ -714,10 +725,29 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
         gridBagConstraints.gridy = 1;
         jPanel8.add(chkReverseEntry, gridBagConstraints);
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("Batch Payment");
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        jSplitPane1.setRightComponent(jPanel9);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -726,21 +756,7 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(documentSearchComponent, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addGap(2, 2, 2))
         );
         layout.setVerticalGroup(
@@ -748,23 +764,7 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(4, 4, 4)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator2)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(documentSearchComponent, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(2, 2, 2)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jSplitPane1))
         );
 
         pack();
@@ -805,8 +805,8 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
     private org.jdesktop.swingx.JXBusyLabel busyLabel;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox chkReverseEntry;
+    private com.ets.fe.acdoc.gui.comp.ClientSearchComp clientSearchComponent;
     private javax.swing.JComboBox cmbTType;
-    private com.ets.fe.acdoc.gui.comp.ClientSearchComp documentSearchComponent;
     private org.jdesktop.swingx.JXDatePicker dtFrom;
     private org.jdesktop.swingx.JXDatePicker dtTo;
     private javax.swing.JLabel jLabel1;
@@ -822,12 +822,12 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lblDMemo;
     private javax.swing.JLabel lblDue;
     private javax.swing.JLabel lblInvAmount;
@@ -901,4 +901,13 @@ public class TSalesBatchPayment extends javax.swing.JInternalFrame implements Pr
             }
         }
     }
+
+    private void loadDueAgents() {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.TICKETING_SALES_DUE_INVOICE);
+        this.doc_type = Enums.AcDocType.INVOICE;
+        clientSearchComponent.setAcDocType(doc_type);
+        clientSearchComponent.setClient_type(Enums.ClientType.AGENT);
+        clientSearchComponent.dueAgentTask();
+    }
+
 }

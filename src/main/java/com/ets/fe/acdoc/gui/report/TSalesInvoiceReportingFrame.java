@@ -1,6 +1,7 @@
 package com.ets.fe.acdoc.gui.report;
 
 import com.ets.fe.Application;
+import com.ets.fe.a_main.ClientSearchComponent;
 import com.ets.fe.acdoc.gui.SalesInvoiceDlg;
 import com.ets.fe.acdoc.model.report.InvoiceReport;
 import com.ets.fe.acdoc.model.report.TktingInvoiceSummery;
@@ -13,6 +14,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -59,22 +62,22 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
 
         btnSearch.setEnabled(false);
         tabResult.setSelectedIndex(0);
-        client_type = documentSearchComponent.getContactableType();
-        client_id = documentSearchComponent.getClient_id();
+        client_type = clientSearchComponent.getContactableType();
+        client_id = clientSearchComponent.getClient_id();
         from = dtFrom.getDate();
         to = dtTo.getDate();
 
         if (rdoDueInvoice.isSelected()) {
-            doc_type = Enums.AcDocType.INVOICE;
+            //doc_type = Enums.AcDocType.INVOICE;
             reportType = "OUTSTANDING";
             task = new SalesAcDocReportingTask(reportType, doc_type, client_type, client_id, from, to, progressBar);
-        }else if (rdoDueRefund.isSelected()) {
+        } else if (rdoDueRefund.isSelected()) {
             reportType = "OUTSTANDING";
-            doc_type = Enums.AcDocType.REFUND;
+            //doc_type = Enums.AcDocType.REFUND;
             task = new SalesAcDocReportingTask(reportType, doc_type, client_type, client_id, from, to, progressBar);
         } else if (rdoInvHistory.isSelected()) {
             reportType = "HISTORY";
-            doc_type = null;
+            //doc_type = null;
             task = new SalesAcDocReportingTask(reportType, doc_type, client_type, client_id, from, to, progressBar);
         }
 
@@ -130,7 +133,7 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
         rdoInvHistory = new javax.swing.JRadioButton();
         rdoDueRefund = new javax.swing.JRadioButton();
         rdoDueInvoice = new javax.swing.JRadioButton();
-        documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(true,true,true,Enums.AgentType.ALL);
+        clientSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(true,true,true,Enums.AgentType.ALL);
         jLabel2 = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
         tabResult = new javax.swing.JTabbedPane();
@@ -193,6 +196,7 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
         buttonGroup1.add(rdoInvHistory);
         rdoInvHistory.setSelected(true);
         rdoInvHistory.setText("Invoice Hisory");
+        rdoInvHistory.addActionListener(radioHistoryListener);
         rdoInvHistory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rdoInvHistoryActionPerformed(evt);
@@ -201,9 +205,11 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
 
         buttonGroup1.add(rdoDueRefund);
         rdoDueRefund.setText("Outstanding Refund");
+        rdoDueRefund.addActionListener(radioDueRefundListener);
 
         buttonGroup1.add(rdoDueInvoice);
         rdoDueInvoice.setText("Outstanding Invoice");
+        rdoDueInvoice.addActionListener(radioDueInvoiceListener);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -262,7 +268,7 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 2, 0);
-        jPanel5.add(documentSearchComponent, gridBagConstraints);
+        jPanel5.add(clientSearchComponent, gridBagConstraints);
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Message:");
@@ -613,7 +619,7 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnViewInvoice;
     private javax.swing.ButtonGroup buttonGroup1;
-    private com.ets.fe.acdoc.gui.comp.ClientSearchComp documentSearchComponent;
+    private com.ets.fe.acdoc.gui.comp.ClientSearchComp clientSearchComponent;
     private org.jdesktop.swingx.JXDatePicker dtFrom;
     private org.jdesktop.swingx.JXDatePicker dtTo;
     private javax.swing.JLabel jLabel1;
@@ -655,7 +661,7 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
             progressBar.setValue(progress);
             if (progress == 100) {
                 try {
-                    report = task.get();                    
+                    report = task.get();
                     populateTable();
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(TSalesInvoiceReportingFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -670,12 +676,12 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
         BeanJasperReport jasperreport = new BeanJasperReport();
         List<InvoiceReport> list = new ArrayList<>();
         list.add(report);
-        JRViewer viewer = jasperreport.invoiceReport(list, Enums.SaleType.TKTSALES, action);        
-        if (viewer != null) {            
-            reportPane.setViewportView(viewer);            
+        JRViewer viewer = jasperreport.invoiceReport(list, Enums.SaleType.TKTSALES, action);
+        if (viewer != null) {
+            reportPane.setViewportView(viewer);
         }
     }
-    
+
     private ChangeListener tabListener = new ChangeListener() {
 
         @Override
@@ -687,8 +693,26 @@ public class TSalesInvoiceReportingFrame extends javax.swing.JInternalFrame impl
                     public void run() {
                         report("VIEW");
                     }
-                });               
-            } 
+                });
+            }
         }
+    };
+
+    private ActionListener radioHistoryListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.ALL);
+        this.doc_type = null;
+        clientSearchComponent.setAcDocType(doc_type);
+    };
+
+    private ActionListener radioDueInvoiceListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.TICKETING_SALES_DUE_INVOICE);
+        this.doc_type = Enums.AcDocType.INVOICE;
+        clientSearchComponent.setAcDocType(doc_type);
+    };
+
+    private ActionListener radioDueRefundListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.TICKETING_SALES_DUE_REFUND);
+        this.doc_type = Enums.AcDocType.REFUND;
+        clientSearchComponent.setAcDocType(doc_type);
     };
 }

@@ -6,11 +6,16 @@ import com.ets.fe.acdoc_o.model.OtherSalesAcDoc;
 import com.ets.fe.accounts.model.AccountsReport;
 import com.ets.fe.acdoc_o.model.report.InvoiceReportOther;
 import com.ets.fe.acdoc_o.model.ServicesSaleReport;
+import com.ets.fe.client.collection.Agents;
+import com.ets.fe.client.collection.Customers;
+import com.ets.fe.client.model.Agent;
+import com.ets.fe.client.model.Customer;
 import com.ets.fe.productivity.model.ProductivityReport;
 import com.ets.fe.util.DateUtil;
 import com.ets.fe.util.Enums;
 import com.ets.fe.util.RestClientUtil;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -37,6 +42,12 @@ public class OtherSAcDocWSClient {
         return status;
     }
 
+    public Integer deleteLine(Long id,Long userid) {
+     String url = APIConfig.get("ws.osacdoc.deleteline") + id+"?userid="+userid;
+        Integer status = RestClientUtil.deleteById(url);
+        return status;
+    }
+    
     public OtherSalesAcDoc _void(OtherSalesAcDoc otherSalesAcDoc) {
         String url = APIConfig.get("ws.osacdoc.void");
         otherSalesAcDoc = RestClientUtil.putEntity(OtherSalesAcDoc.class, url, otherSalesAcDoc);
@@ -183,9 +194,25 @@ public class OtherSAcDocWSClient {
         String dateFrom = DateUtil.dateToString(_dateFrom, "ddMMMyyyy");
         String dateTo = DateUtil.dateToString(_dateTo, "ddMMMyyyy");
 
-        StringBuilder sb = new StringBuilder(APIConfig.get("ws.osacdoc.allagentduereport"));        
+        StringBuilder sb = new StringBuilder(APIConfig.get("ws.osacdoc.allagentduereport"));
         sb.append("?dateStart=").append(dateFrom).append("&dateEnd=").append(dateTo);
         ProductivityReport report = RestClientUtil.getEntity(ProductivityReport.class, sb.toString(), new ProductivityReport());
         return report;
+    }
+
+    public List<Agent> outstandingAgents(Enums.AcDocType doctype) {
+
+        Agents agents = new Agents();
+        String url = APIConfig.get("ws.osacdoc.dueagents") + "?doctype=" + doctype;
+        agents = RestClientUtil.getEntity(Agents.class, url, agents);
+        return agents.getList();
+    }
+
+    public List<Customer> outstandingCusotmers(Enums.AcDocType doctype) {
+
+        Customers customers = new Customers();
+        String url = APIConfig.get("ws.osacdoc.duecustomers") + "?doctype=" + doctype;
+        customers = RestClientUtil.getEntity(Customers.class, url, customers);
+        return customers.getList();
     }
 }

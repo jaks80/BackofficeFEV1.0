@@ -26,6 +26,7 @@
           <ComponentRef name="buttonGroup1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Agent"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click to load Agents"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="rdoAgent.addActionListener(radioAgentListener);"/>
@@ -42,6 +43,7 @@
           <ComponentRef name="buttonGroup1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Customer"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click to load Customers"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="rdoCustomer.addActionListener(radioCustomerListener);"/>
@@ -84,6 +86,7 @@
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="0"/>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Select Agent/Customer/All"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[28, 19]"/>
         </Property>
@@ -139,6 +142,9 @@
       </SubComponents>
     </Container>
     <Component class="org.jdesktop.swingx.JXBusyLabel" name="busyLabel">
+      <Properties>
+        <Property name="horizontalTextPosition" type="int" value="2"/>
+      </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
           <GridBagConstraints gridX="1" gridY="1" gridWidth="3" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="2" insetsLeft="2" insetsBottom="2" insetsRight="2" anchor="22" weightX="0.0" weightY="0.0"/>

@@ -1,4 +1,4 @@
-package com.ets.fe.accounts.gui.payment;
+ package com.ets.fe.accounts.gui.payment;
 
 import com.ets.fe.Application;
 import com.ets.fe.accounts.model.Payment;
@@ -6,7 +6,6 @@ import com.ets.fe.accounts.model.TransactionReceipt;
 import com.ets.fe.accounts.model.TransactionReceipts;
 import com.ets.fe.accounts.task.PaymentTask;
 import com.ets.fe.accounts.task.ReceiptTask;
-import com.ets.fe.acdoc.model.report.TktingInvoiceSummery;
 import com.ets.fe.acdoc_o.gui.OtherInvoiceDlg;
 import com.ets.fe.acdoc_o.model.report.OtherInvoiceSummery;
 import com.ets.fe.report.BeanJasperReport;

@@ -15,6 +15,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -68,19 +70,19 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
         taskType = "SUMMERY";
         btnSearch.setEnabled(false);
 
-        client_type = documentSearchComponent.getContactableType();
-        client_id = documentSearchComponent.getClient_id();
+        client_type = clientSearchComponent.getContactableType();
+        client_id = clientSearchComponent.getClient_id();
         from = dtFrom.getDate();
         to = dtTo.getDate();
 
         if (rdoDueInvoice.isSelected()) {
-            doc_type = Enums.AcDocType.INVOICE;
+            //doc_type = Enums.AcDocType.INVOICE;
             task = new OtherAcDocReportingTask(doc_type, client_type, client_id, from, to, progressBar);
         } else if (rdoDueRefund.isSelected()) {
-            doc_type = Enums.AcDocType.REFUND;
+            //doc_type = Enums.AcDocType.REFUND;
             task = new OtherAcDocReportingTask(doc_type, client_type, client_id, from, to, progressBar);
         } else if (rdoInvHistory.isSelected()) {
-            doc_type = null;
+            //doc_type = null;
             task = new OtherAcDocReportingTask(doc_type, client_type, client_id, from, to, progressBar);
         }
 
@@ -107,7 +109,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
                 String clientName = "";
                 if (s.getAgent() != null) {
                     clientName = s.getAgent().getName();
-                } else if (s.getCustomer()!= null) {
+                } else if (s.getCustomer() != null) {
                     clientName = s.getCustomer().calculateFullName();
                 }
 
@@ -138,7 +140,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
     public void newSalesAcDocDlg(OtherSalesAcDoc invoice) {
         Window w = SwingUtilities.getWindowAncestor(this);
         Frame owner = w instanceof Frame ? (Frame) w : null;
-       
+
         OtherSalesAcDocumentDlg dlg = new OtherSalesAcDocumentDlg(owner);
         dlg.setLocationRelativeTo(this);
         dlg.showDialog(invoice);
@@ -182,7 +184,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
         rdoDueRefund = new javax.swing.JRadioButton();
         rdoInvHistory = new javax.swing.JRadioButton();
         rdoDueInvoice = new javax.swing.JRadioButton();
-        documentSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(true,true,true,Enums.AgentType.ALL);
+        clientSearchComponent = new com.ets.fe.acdoc.gui.comp.ClientSearchComp(true,true,true,Enums.AgentType.ALL);
         jLabel2 = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
         tabResult = new javax.swing.JTabbedPane();
@@ -229,6 +231,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
         btnVoid = new javax.swing.JButton();
         btnNewDoc = new javax.swing.JButton();
         btnNewInvoice = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
         reportPane = new javax.swing.JScrollPane();
 
         setClosable(true);
@@ -253,13 +256,16 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
 
         buttonGroup1.add(rdoDueRefund);
         rdoDueRefund.setText("Outstanding Refund");
+        rdoDueRefund.addActionListener(radioDueRefundListener);
 
         buttonGroup1.add(rdoInvHistory);
         rdoInvHistory.setSelected(true);
         rdoInvHistory.setText("Invoice Hisory");
+        rdoInvHistory.addActionListener(radioHistoryListener);
 
         buttonGroup1.add(rdoDueInvoice);
         rdoDueInvoice.setText("Outstanding Invoice");
+        rdoDueInvoice.addActionListener(radioDueInvoiceListener);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -314,7 +320,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weighty = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        jPanel5.add(documentSearchComponent, gridBagConstraints);
+        jPanel5.add(clientSearchComponent, gridBagConstraints);
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Message:");
@@ -608,6 +614,14 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
             }
         });
 
+        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit18.png"))); // NOI18N
+        btnEdit.setToolTipText("Edit Invoice. \"VOID Invoice\" can be edited here.");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -623,6 +637,8 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
                 .addGap(2, 2, 2)
                 .addComponent(btnNewDoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
+                .addComponent(btnEdit)
+                .addGap(2, 2, 2)
                 .addComponent(btnVoid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -633,6 +649,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
                 .addComponent(btnVoid, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(btnViewInvoice, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
@@ -720,8 +737,24 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
         }
     }//GEN-LAST:event_btnViewInvoiceActionPerformed
 
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        int index = tblReport.getSelectedRow();
+        if (index != -1) {           
+            OtherInvoiceSummery inv = report.getInvoices().get(index);
+
+            Window w = SwingUtilities.getWindowAncestor(this);
+            Frame owner = w instanceof Frame ? (Frame) w : null;
+
+            if (inv.getType().equals(Enums.AcDocType.INVOICE)) {
+                OtherInvoiceDlg dlg = new OtherInvoiceDlg(owner);
+                dlg.showDialog(inv.getId(),true);
+            }
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnEmail;
     private javax.swing.JButton btnNewDoc;
     private javax.swing.JButton btnNewInvoice;
@@ -729,7 +762,7 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
     private javax.swing.JButton btnViewInvoice;
     private javax.swing.JButton btnVoid;
     private javax.swing.ButtonGroup buttonGroup1;
-    private com.ets.fe.acdoc.gui.comp.ClientSearchComp documentSearchComponent;
+    private com.ets.fe.acdoc.gui.comp.ClientSearchComp clientSearchComponent;
     private org.jdesktop.swingx.JXDatePicker dtFrom;
     private org.jdesktop.swingx.JXDatePicker dtTo;
     private javax.swing.JLabel jLabel1;
@@ -808,5 +841,23 @@ public class OtherInvoiceReportingFrame extends javax.swing.JInternalFrame imple
 
             }
         }
+    };
+
+    private ActionListener radioHistoryListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.ALL);
+        this.doc_type = null;
+        clientSearchComponent.setAcDocType(doc_type);
+    };
+
+    private ActionListener radioDueInvoiceListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.OTHER_SALES_DUE_INVOICE);
+        this.doc_type = Enums.AcDocType.INVOICE;
+        clientSearchComponent.setAcDocType(doc_type);
+    };
+
+    private ActionListener radioDueRefundListener = (ActionEvent e) -> {
+        clientSearchComponent.setSearch_type(Enums.ClientSearchType.OTHER_SALES_DUE_REFUND);
+        this.doc_type = Enums.AcDocType.REFUND;
+        clientSearchComponent.setAcDocType(doc_type);
     };
 }
