@@ -323,7 +323,7 @@ public class ClientSearchComp extends javax.swing.JPanel implements PropertyChan
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("progress" == evt.getPropertyName()) {
+        if ("progress".equals(evt.getPropertyName())) {
             int progress = (Integer) evt.getNewValue();
             if (progress == 100) {
                 try {

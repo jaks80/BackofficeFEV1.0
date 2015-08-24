@@ -98,6 +98,20 @@ public class BeanJasperReport {
 
         return null;
     }
+    
+    public JRViewer cashbookReport(Collection<?> beanCollection, String actionType) {
+
+        InputStream template = BeanJasperReport.class.getResourceAsStream("/Report/payment/CashBook.jasper");
+
+        JasperPrint jasperPrint = prepareReport(template, beanCollection);
+        if ("VIEW".equals(actionType)) {
+            return viewReport(jasperPrint);
+        } else {
+            takeAction(actionType, jasperPrint);
+        }
+
+        return null;
+    }
 
     public JRViewer saleReport(Collection<?> beanCollection, Enums.SaleType saletype, String actionType) {
 

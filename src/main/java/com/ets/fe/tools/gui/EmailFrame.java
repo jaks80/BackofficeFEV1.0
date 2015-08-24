@@ -31,6 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -91,8 +92,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
         }
     }
 
-    private void displayEmailIds() {
-        emailids = new LinkedHashSet<>();
+    private void displayEmailIds() {        
         txtRecepient.setText("");
         for (String s : emailids) {
             txtRecepient.append(s);
@@ -101,6 +101,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
     }
 
     private void selectAll() {
+        emailids = new LinkedHashSet<>();
         if (btnSelect.isSelected()) {
             for (int i = 0; i < tblClient.getRowCount(); i++) {
                 tblClient.getModel().setValueAt(true, i, 2);
@@ -133,12 +134,12 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
                 if (column == 2) {
                     if ((boolean) tblClient.getValueAt(row, 2)) {
                         String email = (String) tblClient.getValueAt(row, 1);
-                        if (!email.isEmpty() && email.contains("@")) {
+                        if (!StringUtils.isBlank(email) && email.contains("@")) {
                             emailids.add(email);
                         }
                     } else {
                         String email = (String) tblClient.getValueAt(row, 1);
-                        if (!email.isEmpty()) {
+                        if (!StringUtils.isBlank(email)) {
                             emailids.remove(email);
                         }
                     }
@@ -255,6 +256,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
         buttonGroup1.add(rdoAgent);
         rdoAgent.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         rdoAgent.setText("Agent");
+        rdoAgent.setToolTipText("Select to Search/Get All Agent");
 
         buttonGroup1.add(rdoCustomer);
         rdoCustomer.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -301,6 +303,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
             tblClient.getColumnModel().getColumn(2).setMaxWidth(20);
         }
 
+        txtKeyword.setToolTipText("<html>\nName or SurName or ForeName or TelNo or PostCode or City<br>\nLeave Empty to get All Agent or Customer that has email id.\n</html>");
         txtKeyword.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtKeywordFocusGained(evt);
@@ -330,8 +333,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rdoCustomer)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(busyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(busyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(txtKeyword, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -355,7 +357,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
                         .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtKeyword)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE))
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
         );
 
         jSplitPane1.setRightComponent(jPanel1);
@@ -643,7 +645,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         String keyword = txtKeyword.getText();
 
-        if (keyword != null && keyword.isEmpty()) {
+        if (keyword != null && !keyword.isEmpty()) {
             querySearch(keyword);
         } else {
             if (rdoAgent.isSelected()) {
@@ -728,7 +730,7 @@ public class EmailFrame extends javax.swing.JInternalFrame implements PropertyCh
     }
 
     private void querySearch(String keyword) {
-        if (keyword.length() < 3) {
+        if (keyword.length() < 2) {
             return;
         }
 

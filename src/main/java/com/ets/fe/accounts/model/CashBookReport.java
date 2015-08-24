@@ -1,10 +1,10 @@
 package com.ets.fe.accounts.model;
 
-import com.ets.fe.util.DateUtil;
+import com.ets.fe.Application;
+import com.ets.fe.report.model.Letterhead;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class CashBookReport implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @XmlElement
+    private Letterhead letterhead;
 
     @XmlElement
     private String title = "Cash Book";    
@@ -142,5 +144,19 @@ public class CashBookReport implements Serializable {
 
     public void setTotalCreditTransfer(BigDecimal totalCreditTransfer) {
         this.totalCreditTransfer = totalCreditTransfer;
+    }
+
+    /**
+     * @return the letterhead
+     */
+    public Letterhead getLetterhead() {
+        return letterhead;
+    }
+
+    /**
+     * @param letterhead the letterhead to set
+     */
+    public void setLetterhead(Letterhead letterhead) {
+        this.letterhead = letterhead;
     }
 }

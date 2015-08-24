@@ -179,6 +179,11 @@ public class SalesInvoiceDlg extends JDialog implements PropertyChangeListener {
         createOtherChargeLine();
         tInvoice.setAdditionalChargeLines(chargeLines);
 
+        //For Updating invoice. Exp: VOID Invoice -> Invoice
+        if(tInvoice.getId()!=null){
+         tInvoice.setLastModifiedBy(Application.getLoggedOnUser());
+        }
+        
         String terms = (String) AcDocHeaderComponent.cmbTerms.getSelectedItem();
 
         if (!"Select".equals(terms)) {

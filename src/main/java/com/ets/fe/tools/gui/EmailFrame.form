@@ -98,8 +98,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="rdoCustomer" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="busyLabel" min="-2" pref="105" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="busyLabel" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <Component id="txtKeyword" min="-2" pref="229" max="-2" attributes="0"/>
@@ -130,7 +129,7 @@
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane6" pref="470" max="32767" attributes="0"/>
+                      <Component id="jScrollPane6" pref="474" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -145,6 +144,7 @@
                   <Font name="Tahoma" size="11" style="1"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Agent"/>
+                <Property name="toolTipText" type="java.lang.String" value="Select to Search/Get All Agent"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="rdoCustomer">
@@ -223,6 +223,9 @@
               </SubComponents>
             </Container>
             <Component class="javax.swing.JTextField" name="txtKeyword">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Name or SurName or ForeName or TelNo or PostCode or City&lt;br&gt;&#xa;Leave Empty to get All Agent or Customer that has email id.&#xa;&lt;/html&gt;"/>
+              </Properties>
               <Events>
                 <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtKeywordFocusGained"/>
                 <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtKeywordKeyReleased"/>

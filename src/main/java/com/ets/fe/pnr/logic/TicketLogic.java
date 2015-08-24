@@ -37,7 +37,7 @@ public class TicketLogic {
             newReissue.setPassengerNo(ticketToReissue.getPassengerNo());
             newReissue.setSurName(ticketToReissue.getSurName());
             newReissue.setForeName(ticketToReissue.getForeName());
-            newReissue.setNumericAirLineCode(ticketToReissue.getNumericAirLineCode());
+            newReissue.setNumericAirLineCode("");
             newReissue.setTicketNo("");
             newReissue.setOrginalTicketNo(ticketToReissue.getTicketNo());
             newReissue.setCurrencyCode(ticketToReissue.getCurrencyCode());

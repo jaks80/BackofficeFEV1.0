@@ -776,7 +776,7 @@ public class TicketComponent extends javax.swing.JPanel implements PropertyChang
         });
 
         btnReIssue.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/reissue.png"))); // NOI18N
-        btnReIssue.setToolTipText("Re-Issue Issued Ticket");
+        btnReIssue.setToolTipText("Re-Issue Ticket");
         btnReIssue.setMaximumSize(new java.awt.Dimension(35, 22));
         btnReIssue.setMinimumSize(new java.awt.Dimension(35, 22));
         btnReIssue.setPreferredSize(new java.awt.Dimension(35, 22));
@@ -1073,8 +1073,8 @@ public class TicketComponent extends javax.swing.JPanel implements PropertyChang
             if (t != null && !ticketExist(t)) {
                 this.tickets.add(t);
                 populateTblTicket(tickets);
-            }
-            setSaveNeeded(true);
+                setSaveNeeded(true);
+            }            
         }
     }//GEN-LAST:event_btnRefundActionPerformed
 
@@ -1085,8 +1085,8 @@ public class TicketComponent extends javax.swing.JPanel implements PropertyChang
             if (t != null && !ticketExist(t)) {
                 this.tickets.add(t);
                 populateTblTicket(tickets);
-            }
-            setSaveNeeded(true);
+                setSaveNeeded(true);
+            }            
         }
     }//GEN-LAST:event_btnReIssueActionPerformed
 
@@ -1240,7 +1240,8 @@ public class TicketComponent extends javax.swing.JPanel implements PropertyChang
         boolean exist = false;
         for (Ticket t : tickets) {
             if (t.getTicketNo().equals(ticket.getTicketNo())
-                    && t.getTktStatus().equals(ticket.getTktStatus())) {
+                    && t.getTktStatus().equals(ticket.getTktStatus())
+                    && t.getForeName().equals(ticket.getForeName())) {
                 exist = true;
                 break;
             }
